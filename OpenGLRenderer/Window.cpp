@@ -1,0 +1,114 @@
+#include "Window.h"
+
+#include <iostream>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <assert.h>
+
+#include "Defines.h"
+
+static float newWidth = 0.f;
+static float newHeight = 0.f;
+
+static void framebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+    newWidth = width;
+    newHeight = height;
+}
+
+Window* Window::window = nullptr;
+
+void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
+Window& Window::Get()
+{
+    if (window == nullptr)
+    {
+        window = new Window();
+        bool success = window->Init(WINDOW_WIDTH, WINDOW_HEIGHT);
+        assert(success);
+    }
+    return *window;
+}
+
+Window::Window(/* args */)
+: window_(nullptr)
+, width_(0.f)
+, height_(0.f)
+{
+    glfwSetErrorCallback(error_callback);
+}
+
+bool Window::Init(int windowWidth, int windowHeight)
+{
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    if constexpr (MSAA_ENABLED)
+    {
+        glfwWindowHint(GLFW_SAMPLES, 4);
+    }
+
+    window_ = glfwCreateWindow(windowWidth, windowHeight, "Renderer", NULL, NULL);
+    if (window_ == nullptr)
+    {
+        std::cout << "Failed to create GLFW window\n";
+        return false;
+    }
+    glfwMakeContextCurrent(window_);
+
+    if (unsigned int glewStatus = glewInit() != GLEW_OK)
+    {
+        std::cout << "GLEW failed to initialise - status: " << glewStatus << '\n';
+        const char* version = (const char*)glGetString(GL_VERSION);
+        std::cout << "Supported OpenGl version: " << version << '\n';
+        return false;
+    }
+
+    glViewport(0, 0, windowWidth, windowHeight);
+    glfwSetFramebufferSizeCallback(window_, framebufferSizeCallback);
+
+    width_ = newWidth = windowWidth;
+    height_ = newHeight = windowHeight;
+
+    if constexpr (!DEBUG_MODE_ENABLED)
+    {
+        glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
+    }
+    
+    return true;
+}
+
+inline bool Window::IsWindowResized() const
+{
+    return width_ != newWidth || height_ != newHeight;
+}
+
+bool Window::WindowShouldClose() const
+{
+    return glfwWindowShouldClose(window_);
+}
+
+void Window::SwapBuffers()
+{
+    glfwSwapBuffers(window_);
+}
+
+void Window::HandleResizeEvent()
+{
+    if (IsWindowResized())
+    {
+        height_ = newHeight;
+        width_ = newWidth;
+    }
+}
+
+Window::~Window()
+{
+}
+

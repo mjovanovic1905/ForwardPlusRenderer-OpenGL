@@ -1,0 +1,61 @@
+#ifndef _SHADER_PROGRAM_
+#define _SHADER_PROGRAM_
+
+#include <climits>
+#include <vector>
+#include <string>
+#include <optional>
+#include <glm/glm.hpp>
+
+struct MaterialData;
+struct LightProperties;
+struct DirectionalLight;
+struct PointLight;
+
+struct ShaderDefine
+{
+    ShaderDefine(const std::string& name, const std::string& value) : variableName(name), variableValue(value) {}
+    std::string variableName;
+    std::string variableValue;
+    std::string ToString() const { return "\n#define " + variableName + " " + variableValue + "\n"; }
+};
+
+struct ShaderData
+{
+    std::string sourceCode;
+    std::vector<ShaderDefine> defines;
+    std::string ToString() const;
+};
+
+class ShaderProgram
+{
+public:
+    ShaderProgram();
+    ~ShaderProgram();
+
+    bool Init(
+        const ShaderData* vertexData,
+        const ShaderData* fragmentData,
+        const ShaderData* geometryData = nullptr);
+    void UseProgram();
+    void SetUniformValue(const char* uniformName, const glm::vec4& value);
+    void SetUniformValue(const char* uniformName, const glm::vec3& value);
+    void SetUniformValue(const char* uniformName, int value);
+    void SetUniformValue(const char* uniformName, float value);
+    void SetUniformValue(const char* uniformName, const glm::mat4& matrix);
+    void SetUniformValue(const char* uniformName, MaterialData& material);
+    void SetUniformValue(const char* uniformName, const LightProperties& light);
+    void SetUniformValue(const char* uniformName, const DirectionalLight& light);
+    void SetUniformValue(const char* uniformName, const PointLight& light);
+    void SetUniformBuffer(const char* uniformBufferName, int binding);
+    void SetUniformValue(const char* uniformName, const std::vector<PointLight>& lights);
+
+private:
+    static constexpr unsigned int INVALID_SHADER_ID = UINT_MAX;
+
+    unsigned int CreateShader(const char* shaderSoruce, unsigned int shaderType);
+
+    unsigned int shaderProgram_;
+};
+
+#endif
