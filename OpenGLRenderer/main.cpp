@@ -68,9 +68,9 @@ void renderDepthMap(Texture& deptMap)
         vertexBuffer.Bind();
 
         ShaderData vertexShader;
-        vertexShader.sourceCode = ReadFile("./shaders/depthDBG.vs");
+        vertexShader.sourceCode = ReadFile("./Shaders/depthDBG.vert");
         ShaderData fragmentShader;
-        fragmentShader.sourceCode = ReadFile("./shaders/depthDBG.fs");
+        fragmentShader.sourceCode = ReadFile("./Shaders/depthDBG.frag");
 
         shaderProgram.Init(&vertexShader, &fragmentShader);
         shaderProgram.UseProgram();
@@ -255,9 +255,9 @@ int main()
     int numCSMPlanes = shadowCascadeLevels.size() + 1;
 
     ShaderData vertexShaderData;
-    vertexShaderData.sourceCode = ReadFile("./shaders/blinn-phong.vs");
+    vertexShaderData.sourceCode = ReadFile("./Shaders/blinn-phong.vert");
     ShaderData fragmentShaderData;
-    fragmentShaderData.sourceCode = ReadFile("./shaders/blinn-phong.fs");
+    fragmentShaderData.sourceCode = ReadFile("./Shaders/blinn-phong.frag");
     fragmentShaderData.defines.push_back(ShaderDefine("NUM_CSM_PLANES", std::to_string(numCSMPlanes)));
     ShaderProgram shaderProgram;
     if (!shaderProgram.Init(&vertexShaderData, &fragmentShaderData))
@@ -274,11 +274,11 @@ int main()
     }
 
     ShaderData depthMapVertexShader;
-    depthMapVertexShader.sourceCode = ReadFile("./shaders/layeredDepthMap.vs"); 
+    depthMapVertexShader.sourceCode = ReadFile("./Shaders/layeredDepthMap.vert"); 
     ShaderData depthMapFragmentShader;
-    depthMapFragmentShader.sourceCode = ReadFile("./shaders/layeredDepthMap.fs"); 
+    depthMapFragmentShader.sourceCode = ReadFile("./Shaders/layeredDepthMap.frag"); 
     ShaderData depthMapGeometryShader;
-    depthMapGeometryShader.sourceCode = ReadFile("./shaders/layeredDepthMap.gs"); 
+    depthMapGeometryShader.sourceCode = ReadFile("./Shaders/layeredDepthMap.geom"); 
     depthMapGeometryShader.defines.push_back(ShaderDefine("NUM_CSM_PLANES", std::to_string(numCSMPlanes)));
     ShaderProgram depthMapShader;
     if (!depthMapShader.Init(&depthMapVertexShader, &depthMapFragmentShader, &depthMapGeometryShader))
@@ -304,9 +304,9 @@ int main()
     ShadowMaps shadowMaps(shadowCascadeLevels, camera, light, SHADOW_RES, 2);
 
     ShaderData skyboxVSData;
-    skyboxVSData.sourceCode = ReadFile("./shaders/cubemap_test.vs");
+    skyboxVSData.sourceCode = ReadFile("./Shaders/cubemap_test.vert");
     ShaderData skyboxFSData;
-    skyboxFSData.sourceCode = ReadFile("./shaders/cubemap_test.fs");
+    skyboxFSData.sourceCode = ReadFile("./Shaders/cubemap_test.frag");
     ShaderProgram skyboxShader;
     skyboxShader.Init(&skyboxVSData, &skyboxFSData);
 
@@ -357,19 +357,19 @@ int main()
     DrawDebugLights debugLights(lightGenerator.GetLights());
     
     ShaderData debugLightsVertexShaderData;
-    debugLightsVertexShaderData.sourceCode = ReadFile("./shaders/light_debug.vs");
+    debugLightsVertexShaderData.sourceCode = ReadFile("./Shaders/light_debug.vert");
 
     ShaderData debugLightsfragmentShaderData;
-    debugLightsfragmentShaderData.sourceCode = ReadFile("./shaders/light_debug.fs");
+    debugLightsfragmentShaderData.sourceCode = ReadFile("./Shaders/light_debug.frag");
     
     ShaderProgram debugLightsShader;
     debugLightsShader.Init(&debugLightsVertexShaderData, &debugLightsfragmentShaderData);
 
     ShaderData depthPrepassVertexShader;
-    depthPrepassVertexShader.sourceCode = ReadFile("./shaders/depthMap.vs");
+    depthPrepassVertexShader.sourceCode = ReadFile("./Shaders/depthMap.vert");
 
     ShaderData depthPrepassFragmentShader;
-    depthPrepassFragmentShader.sourceCode = ReadFile("./shaders/depthMap.fs");
+    depthPrepassFragmentShader.sourceCode = ReadFile("./Shaders/depthMap.frag");
 
     ShaderProgram depthPrepassShader;
     depthPrepassShader.Init(&depthPrepassVertexShader, &depthPrepassFragmentShader);

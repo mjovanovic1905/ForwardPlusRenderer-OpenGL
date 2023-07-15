@@ -57,9 +57,9 @@ void FXAA::Apply()
 void FXAA::CreateShaderProgram()
 {
     ShaderData vertexShaderData;
-    vertexShaderData.sourceCode = ReadFile("./shaders/FXAA.vs");
+    vertexShaderData.sourceCode = ReadFile("./Shaders/FXAA.vert");
     ShaderData fragmentShaderData;
-    fragmentShaderData.sourceCode = ReadFile("./shaders/FXAA.fs");
+    fragmentShaderData.sourceCode = ReadFile("./Shaders/FXAA.frag");
 
     shader_.Init(&vertexShaderData, &fragmentShaderData);
 }
