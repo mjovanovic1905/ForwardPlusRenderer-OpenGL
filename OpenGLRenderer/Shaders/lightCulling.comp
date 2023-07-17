@@ -36,7 +36,7 @@ shared uint visibleLightNum;
 shared int minDepth;
 shared int maxDepth;
 shared vec4 frustum[6];
-shared int visibleLightIndices[1024];
+//shared int visibleLightIndices[1024];
 
 
 float LinearizeDepth(float depth, float nearPlane, float farPlane) 
@@ -128,27 +128,19 @@ void main()
         {
             uint offset = atomicAdd(visibleLightNum, 1);
             
-            visibleLightIndices[offset] = int(lightId);
+            if (offset < 1023)
+            {
+                uint id = tileId * 1024 + offset;
+                visibleLightIndicesBuffer.data[id] = int(lightId);
+            }
         }
     }
 
-    barrier();
-
     if (localThreadId == 0)
     {
-//        uint offset = visibleLightNum == 0 ? 0 : visibleLightNum - 1;
-//        uint id = tileId * 1024;
-//        visibleLightIndicesBuffer.data[id + offset] = -2;
-        uint offset = tileId * 1024; // Determine bosition in global buffer
-		for (uint i = 0; i < visibleLightNum; i++) {
-			visibleLightIndicesBuffer.data[offset + i] = visibleLightIndices[i];
-		}
-
-		if (visibleLightNum != 1024) {
-			// Unless we have totally filled the entire array, mark it's end with -1
-			// Final shader step will use this to determine where to stop (without having to pass the light count)
-			visibleLightIndicesBuffer.data[offset + visibleLightNum] = -2;
-		}
+        uint offset = visibleLightNum == 0 ? 0 : visibleLightNum - 1;
+        uint id = tileId * 1024;
+        visibleLightIndicesBuffer.data[id + offset] = -2;
     }
 
 }
