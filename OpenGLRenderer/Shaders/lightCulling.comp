@@ -1,0 +1,154 @@
+#version 450
+
+#define INT_MAX 2147483647 
+
+
+struct PointLight
+{    
+    vec4 position;
+    vec4 ambient;
+    vec4 diffuse;
+    vec4 specular;
+
+    float constant;
+    float linear;
+    float quadratic;  
+    float radius;
+}; 
+
+// Shader storage buffer objects
+layout(std430, binding = 1) readonly buffer LightBuffer {
+	PointLight data[];
+} lightBuffer;
+
+layout(std430, binding = 2) writeonly buffer VisibleLightIndicesBuffer {
+	int data[];
+} visibleLightIndicesBuffer;
+
+uniform sampler2D depthMap;
+uniform float nearPlane;
+uniform float farPlane;
+uniform mat4 view;
+uniform mat4 viewProj;
+uniform int numLights;
+
+shared uint visibleLightNum;
+shared int minDepth;
+shared int maxDepth;
+shared vec4 frustum[6];
+shared int visibleLightIndices[1024];
+
+
+float LinearizeDepth(float depth, float nearPlane, float farPlane) 
+{
+    float z = depth * 2.0 - 1.0; // back to NDC 
+    return (2.0 *  nearPlane * farPlane) / (farPlane +  nearPlane - z * (farPlane -  nearPlane));	
+}
+
+#define TILE_SIZE 16
+layout(local_size_x = TILE_SIZE, local_size_y = TILE_SIZE, local_size_z = 1) in;
+void main()
+{
+    uint tileId = gl_WorkGroupID.x * gl_NumWorkGroups.y + gl_WorkGroupID.y;
+    uint localThreadId = gl_LocalInvocationIndex;
+    uint globalThreadId = tileId * TILE_SIZE + localThreadId;
+
+    if (localThreadId == 0) 
+    {
+        minDepth= INT_MAX;
+        maxDepth = 0;
+        visibleLightNum = 0;
+    }
+
+    barrier();
+
+    float depth = LinearizeDepth(texture(depthMap, gl_GlobalInvocationID.xy / vec2(1024, 600)).r, nearPlane, farPlane); // gl_GlobalInvocationID.xy / screenSize
+    int intDepth = floatBitsToInt(depth);
+
+    atomicMin(minDepth, intDepth);
+    atomicMax(maxDepth, intDepth);
+
+    barrier();
+
+    if (localThreadId == 0)
+    {
+        float floatMinDepth = intBitsToFloat(minDepth);
+        float floatMaxDepth = intBitsToFloat(maxDepth);
+        vec2 negativeStep = (2.0 * gl_WorkGroupID.xy) / vec2(gl_NumWorkGroups.xy);
+		vec2 positiveStep = (2.0 * gl_WorkGroupID.xy + ivec2(1, 1)) / vec2(gl_NumWorkGroups.xy);
+
+		// Set up starting values for planes using steps and min and max z values
+		frustum[0] = vec4(1.0, 0.0, 0.0, 1.0 - negativeStep.x); // Left
+		frustum[1] = vec4(-1.0, 0.0, 0.0, -1.0 + positiveStep.x); // Right
+		frustum[2] = vec4(0.0, 1.0, 0.0, 1.0 - negativeStep.y); // Bottom
+		frustum[3] = vec4(0.0, -1.0, 0.0, -1.0 + positiveStep.y); // Top
+		frustum[4] = vec4(0.0, 0.0, -1.0, -floatMinDepth); // Near
+		frustum[5] = vec4(0.0, 0.0, 1.0, floatMaxDepth); // Far
+
+		// Transform the first four planes
+		for (uint i = 0; i < 4; i++) {
+			frustum[i] *= viewProj;
+			frustum[i] /= length(frustum[i].xyz);
+		}
+
+		// Transform the depth planes
+		frustum[4] *= view;
+		frustum[4] /= length(frustum[4].xyz);
+		frustum[5] *= view;
+		frustum[5] /= length(frustum[5].xyz);
+    }
+
+    barrier();
+
+    int numThreads = TILE_SIZE * TILE_SIZE;
+    
+    for (int passId = 0; passId < numLights; passId += numThreads)
+    {
+        uint lightId = passId + localThreadId;
+        if (lightId >= numLights)
+        {
+            break;
+        }
+
+        vec3 pos = lightBuffer.data[lightId].position.xyz;
+        float r = lightBuffer.data[lightId].radius;
+
+        bool isInsideFrustum = true;
+        for (int i = 0; i < 6; i++)
+        {
+            float distance = dot(vec4(pos, 0), frustum[i]) + r;
+            if (distance <= 0.0)
+            {
+                isInsideFrustum = false;
+                break;
+            }
+        }
+
+        if (isInsideFrustum)
+        {
+            uint offset = atomicAdd(visibleLightNum, 1);
+            
+            visibleLightIndices[offset] = int(lightId);
+        }
+    }
+
+    barrier();
+
+    if (localThreadId == 0)
+    {
+//        uint offset = visibleLightNum == 0 ? 0 : visibleLightNum - 1;
+//        uint id = tileId * 1024;
+//        visibleLightIndicesBuffer.data[id + offset] = -2;
+        uint offset = tileId * 1024; // Determine bosition in global buffer
+		for (uint i = 0; i < visibleLightNum; i++) {
+			visibleLightIndicesBuffer.data[offset + i] = visibleLightIndices[i];
+		}
+
+		if (visibleLightNum != 1024) {
+			// Unless we have totally filled the entire array, mark it's end with -1
+			// Final shader step will use this to determine where to stop (without having to pass the light count)
+			visibleLightIndicesBuffer.data[offset + visibleLightNum] = -2;
+		}
+    }
+
+}

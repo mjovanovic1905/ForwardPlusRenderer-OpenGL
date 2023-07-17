@@ -93,13 +93,19 @@
     <ClCompile Include="DrawDebugLights.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="LightGenerator.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderProgram.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="ShadowMaps.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="LightGenerator.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLightBuffer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ComputeShader.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -143,7 +149,7 @@
     <ClInclude Include="TextureArray.h">
       <Filter>ModelLoader</Filter>
     </ClInclude>
-    <ClInclude Include="UniformBuffer.h">
+    <ClInclude Include="StorageBuffer.h">
       <Filter>Buffers</Filter>
     </ClInclude>
     <ClInclude Include="DepthMapPass.h">
@@ -196,6 +202,12 @@
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLightBuffer.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ComputeShader.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -272,6 +284,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\outline.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\lightCulling.comp">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\blinn-phong-fp.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -29,7 +29,7 @@
 #include "Renderbuffer.h"
 #include "Framebuffer.h"
 #include "TextureArray.h"
-#include "UniformBuffer.h"
+#include "StorageBuffer.h"
 #include "ShadowMaps.h"
 #include "DepthMapPass.h"
 #include "ObjectDrawPass.h"
@@ -37,6 +37,8 @@
 #include "DrawDebugLights.h"
 #include "LightGenerator.h"
 #include "DepthPrepass.h"
+#include "PointLightBuffer.h"
+#include "ComputeShader.h"
 
 void renderDepthMap(Texture& deptMap)
 {
@@ -257,7 +259,7 @@ int main()
     ShaderData vertexShaderData;
     vertexShaderData.sourceCode = ReadFile("./Shaders/blinn-phong.vert");
     ShaderData fragmentShaderData;
-    fragmentShaderData.sourceCode = ReadFile("./Shaders/blinn-phong.frag");
+    fragmentShaderData.sourceCode = ReadFile("./Shaders/blinn-phong-fp.frag");
     fragmentShaderData.defines.push_back(ShaderDefine("NUM_CSM_PLANES", std::to_string(numCSMPlanes)));
     ShaderProgram shaderProgram;
     if (!shaderProgram.Init(&vertexShaderData, &fragmentShaderData))
@@ -265,9 +267,12 @@ int main()
         ReleaseLibraryData();
         return -1;
     }
-
+    int workGroupsX = (WINDOW_WIDTH + (WINDOW_WIDTH % 16)) / 16;
+    int workGroupsY = (WINDOW_HEIGHT + (WINDOW_HEIGHT % 16)) / 16;
     shaderProgram.UseProgram();
     shaderProgram.SetUniformValue("farPlane", Camera::FAR_PLANE);
+    shaderProgram.SetUniformValue("numOfTiles", workGroupsY);
+    shaderProgram.SetUniformValue("numLights", 17);
     for (size_t i = 0; i < shadowCascadeLevels.size(); ++i)
     {
         shaderProgram.SetUniformValue(("cascadePlaneDistances[" + std::to_string(i) + "]").c_str(), shadowCascadeLevels[i]);
@@ -318,6 +323,7 @@ int main()
 
     Model mmodel("../sponza/", "sponza.obj", false);
     glm::mat4 model = glm::mat4(1.f);
+
     
     auto drawFunc = [&](ShaderProgram& shader)
     {
@@ -375,6 +381,23 @@ int main()
     depthPrepassShader.Init(&depthPrepassVertexShader, &depthPrepassFragmentShader);
     DepthPrepass depthPrepass(drawFunc, depthPrepassShader);
 
+    PointLightBuffer pointLightBuffer(lightGenerator.GetLights(),workGroupsX * workGroupsY , 1024);
+
+
+    ShaderData computeShaderData;
+    computeShaderData.sourceCode = ReadFile("./Shaders/lightCulling.comp");
+
+    ComputeShader computeShader(computeShaderData, workGroupsX, workGroupsY);
+    computeShader.UseProgram();
+    computeShader.SetUniformValue("view", camera.GetViewMatrix());
+    computeShader.SetUniformValue("viewProj", camera.GetProjectionMatrix() * camera.GetViewMatrix());
+    computeShader.SetUniformValue("numLights", (int)lightGenerator.GetLights().size());
+    computeShader.SetUniformValue("depthMap", (int)depthPrepass.GetDepthMap().GetTextureUnit());
+    computeShader.SetUniformValue("nearPlane", Camera::NEAR_PLANE);
+    computeShader.SetUniformValue("farPlane", Camera::FAR_PLANE);
+    computeShader.SetStorageBuffer("LightBuffer", 1);
+    computeShader.SetStorageBuffer("VisibleLightIndicesBuffer", 2);
+
     while(!mainWindow.WindowShouldClose())
     {
         mainWindow.HandleResizeEvent();
@@ -387,16 +410,26 @@ int main()
         shadowMaps.BindShadowMapTexture();
 
         depthMapPass.Draw();
-        drawPass.Draw();
+        //drawPass.Draw();
 
-        debugLights.SetModel(model);
-        debugLights.SetView(camera.GetViewMatrix());
-        debugLights.SetProj(camera.GetProjectionMatrix());
+        //debugLights.SetModel(model);
+        //debugLights.SetView(camera.GetViewMatrix());
+        //debugLights.SetProj(camera.GetProjectionMatrix());
         //debugLights.Draw(debugLightsShader);
 
-        // depthPrepass.Draw();
+        //depthPrepass.
+        depthPrepass.Draw();
 
-        // renderDepthMap(depthPrepass.getDepthMap());
+         //renderDepthMap(depthPrepass.GetDepthMap());
+
+        computeShader.UseProgram();
+        computeShader.SetUniformValue("view", camera.GetViewMatrix());
+        computeShader.SetUniformValue("viewProj", camera.GetProjectionMatrix() * camera.GetViewMatrix());
+        computeShader.SetUniformValue("depthMap", (int)depthPrepass.GetDepthMap().GetTextureUnit());
+        depthPrepass.GetDepthMap().BindTexture();
+         computeShader.Execute();
+         computeShader.Wait();
+         drawPass.Draw();
 
         // const auto proj = glm::perspective(
         // glm::radians(camera.getFOV()), (float)WINDOW_WIDTH / WINDOW_HEIGHT, Camera::NEAR_PLANE,

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="BatchedMeshCreator.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ComputeShader.cpp" />
     <ClCompile Include="Cubemap.cpp" />
     <ClCompile Include="DepthMapPass.cpp" />
     <ClCompile Include="DepthPrepass.cpp" />
@@ -29,6 +30,7 @@
     <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="FXAA.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
+    <ClCompile Include="PointLightBuffer.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="LightGenerator.cpp" />
     <ClCompile Include="main.cpp" />
@@ -48,6 +50,7 @@
   <ItemGroup>
     <ClInclude Include="BatchedMeshCreator.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ComputeShader.h" />
     <ClInclude Include="Cubemap.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="DepthMapPass.h" />
@@ -58,6 +61,7 @@
     <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="FXAA.h" />
     <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="PointLightBuffer.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="LightGenerator.h" />
     <ClInclude Include="LightProperties.h" />
@@ -72,7 +76,7 @@
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureArray.h" />
-    <ClInclude Include="UniformBuffer.h" />
+    <ClInclude Include="StorageBuffer.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VertexBuffer.h" />
@@ -81,6 +85,7 @@
   <ItemGroup>
     <None Include="Shaders\basic.frag" />
     <None Include="Shaders\basic.vert" />
+    <None Include="Shaders\blinn-phong-fp.frag" />
     <None Include="Shaders\blinn-phong.frag" />
     <None Include="Shaders\blinn-phong.vert" />
     <None Include="Shaders\cubemap_test.frag" />
@@ -98,6 +103,7 @@
     <None Include="Shaders\layeredDepthMap.vert" />
     <None Include="Shaders\light.frag" />
     <None Include="Shaders\light.vert" />
+    <None Include="Shaders\lightCulling.comp" />
     <None Include="Shaders\lightSource.frag" />
     <None Include="Shaders\lightSource.vert" />
     <None Include="Shaders\light_debug.frag" />

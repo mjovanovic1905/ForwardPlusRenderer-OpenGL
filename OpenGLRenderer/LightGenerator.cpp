@@ -5,9 +5,9 @@
 #include <sstream>
 
 
-const unsigned int LightGenerator::NUM_OF_LIGHTS = 1700;
-const glm::vec3 LightGenerator::LIGHT_MIN_BOUNDS = glm::vec3(0.0f, 100.0f, -500.0f);
-const glm::vec3 LightGenerator::LIGHT_MAX_BOUNDS = glm::vec3(1000.0f, 400.0f, 500.0f);
+const unsigned int LightGenerator::NUM_OF_LIGHTS = 17;
+const glm::vec4 LightGenerator::LIGHT_MIN_BOUNDS = glm::vec4(0.0f, 100.0f, -500.0f, 0.0f);
+const glm::vec4 LightGenerator::LIGHT_MAX_BOUNDS = glm::vec4(1000.0f, 400.0f, 500.0f, 0.0f);
 
 LightGenerator::LightGenerator(std::string filePath)
 {
@@ -20,9 +20,9 @@ LightGenerator::LightGenerator(std::string filePath)
 		PointLight light;
 		light.position = GenerateRandomPosition(dis, gen);
 		light.radius = 10000.f;
-        light.ambient = glm::vec3(0.2f, 0.2f, 0.2f);
-        light.diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
-        light.specular = glm::vec3(1.f, 1.f, 1.f);
+        light.ambient = glm::vec4(0.2f, 0.2f, 0.2f, 0.0f);
+        light.diffuse = glm::vec4(0.8f, 0.8f, 0.8f, 0.0f);
+        light.specular = glm::vec4(1.f, 1.f, 1.f, 0.0f);
         light.constant = 1.0f;
         light.linear = 0.007f;
         light.quadratic = 0.0002f;
@@ -31,9 +31,9 @@ LightGenerator::LightGenerator(std::string filePath)
 	}
 }
 
-glm::vec3 LightGenerator::GenerateRandomPosition(std::uniform_real_distribution<>& dis, std::mt19937& gen)
+glm::vec4 LightGenerator::GenerateRandomPosition(std::uniform_real_distribution<>& dis, std::mt19937& gen)
 {
-	glm::vec3 position = glm::vec3(0.0);
+	glm::vec4 position = glm::vec4(0.0);
 
 	for (int i = 0; i < 3; i++)
     {

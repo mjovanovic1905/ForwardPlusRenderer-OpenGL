@@ -76,22 +76,15 @@ bool ShaderProgram::Init(
         }
     }
 
-    shaderProgram_ = glCreateProgram();
-    glAttachShader(shaderProgram_, vertexShader);
-    glAttachShader(shaderProgram_, fragmentShader);
+    id_ = glCreateProgram();
+    glAttachShader(id_, vertexShader);
+    glAttachShader(id_, fragmentShader);
     if (geometryData != nullptr)
     {
-        glAttachShader(shaderProgram_, geomertyShader);
+        glAttachShader(id_, geomertyShader);
     }
-    glLinkProgram(shaderProgram_);
-    int  success;
-    glGetProgramiv(shaderProgram_, GL_LINK_STATUS, &success);
-    if(!success)
-    {
-        char infoLog[512];
-        glGetProgramInfoLog(shaderProgram_, 512, NULL, infoLog);
-        std::cout << "ERROR::PROGRAM::CREATION_FAILED\n" << infoLog << std::endl;
-    }
+    glLinkProgram(id_);
+    CheckForErrors();
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
@@ -103,38 +96,50 @@ bool ShaderProgram::Init(
     return true;
 }
 
+void ShaderProgram::CheckForErrors()
+{
+    int  success;
+    glGetProgramiv(id_, GL_LINK_STATUS, &success);
+    if (!success)
+    {
+        char infoLog[512];
+        glGetProgramInfoLog(id_, 512, NULL, infoLog);
+        std::cout << "ERROR::PROGRAM::CREATION_FAILED\n" << infoLog << std::endl;
+    }
+}
+
 void ShaderProgram::UseProgram()
 {
-    glUseProgram(shaderProgram_);
+    glUseProgram(id_);
 }
 
 void ShaderProgram::SetUniformValue(const char* uniformName, const glm::vec4& value)
 {
-    int uniformLocation = glGetUniformLocation(shaderProgram_, uniformName);
+    int uniformLocation = glGetUniformLocation(id_, uniformName);
     glUniform4f(uniformLocation, value[0], value[1], value[2], value[3]);
 }
 
 void ShaderProgram::SetUniformValue(const char* uniformName, const glm::vec3& value)
 {
-    int uniformLocation = glGetUniformLocation(shaderProgram_, uniformName);
+    int uniformLocation = glGetUniformLocation(id_, uniformName);
     glUniform3f(uniformLocation, value[0], value[1], value[2]);
 }
 
 void ShaderProgram::SetUniformValue(const char* uniformName, int value)
 {
-    int uniformLocation = glGetUniformLocation(shaderProgram_, uniformName);
+    int uniformLocation = glGetUniformLocation(id_, uniformName);
     glUniform1i(uniformLocation, value);
 }
 
 void ShaderProgram::SetUniformValue(const char* uniformName, float value)
 {
-    int uniformLocation = glGetUniformLocation(shaderProgram_, uniformName);
+    int uniformLocation = glGetUniformLocation(id_, uniformName);
     glUniform1f(uniformLocation, value);
 }
 
 void ShaderProgram::SetUniformValue(const char* uniformName, const glm::mat4& matrix)
 {
-    int uniformLocation = glGetUniformLocation(shaderProgram_, uniformName);
+    int uniformLocation = glGetUniformLocation(id_, uniformName);
     glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
@@ -197,8 +202,14 @@ void ShaderProgram::SetUniformValue(const char* uniformName, const std::vector<P
 
 void ShaderProgram::SetUniformBuffer(const char* uniformBufferName, int binding)
 {
-    unsigned int uboIndex = glGetUniformBlockIndex(shaderProgram_, uniformBufferName);   
-    glUniformBlockBinding(shaderProgram_, uboIndex, binding);
+    unsigned int uboIndex = glGetUniformBlockIndex(id_, uniformBufferName);   
+    glUniformBlockBinding(id_, uboIndex, binding);
+}
+
+void ShaderProgram::SetStorageBuffer(const char* storageBufferName, int binding)
+{
+    unsigned int uboIndex = glGetProgramResourceIndex(id_, GL_SHADER_STORAGE_BLOCK, storageBufferName);
+    glShaderStorageBlockBinding(id_, uboIndex, binding);
 }
 
 ShaderProgram::~ShaderProgram()

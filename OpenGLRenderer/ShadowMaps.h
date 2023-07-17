@@ -5,7 +5,7 @@
 
 #include <glm/glm.hpp>
 
-#include "UniformBuffer.h"
+#include "StorageBuffer.h"
 #include "TextureArray.h"
 #include "Camera.h"
 #include "DirectionalLight.h"
@@ -51,7 +51,7 @@ private:
     const DirectionalLight light_;
 
     std::vector<float> shadowCascadeLevels_;
-    UniformBuffer<glm::mat4> lightTransformationMatricesGPU_;
+    StorageBuffer<glm::mat4> lightTransformationMatricesGPU_;
     TextureArray depthMapTextures_;
 };
 

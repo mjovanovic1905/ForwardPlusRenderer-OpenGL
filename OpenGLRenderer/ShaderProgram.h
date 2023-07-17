@@ -37,6 +37,7 @@ public:
         const ShaderData* vertexData,
         const ShaderData* fragmentData,
         const ShaderData* geometryData = nullptr);
+    void CheckForErrors();
     void UseProgram();
     void SetUniformValue(const char* uniformName, const glm::vec4& value);
     void SetUniformValue(const char* uniformName, const glm::vec3& value);
@@ -48,14 +49,15 @@ public:
     void SetUniformValue(const char* uniformName, const DirectionalLight& light);
     void SetUniformValue(const char* uniformName, const PointLight& light);
     void SetUniformBuffer(const char* uniformBufferName, int binding);
+    void SetStorageBuffer(const char* storageBufferName, int binding);
     void SetUniformValue(const char* uniformName, const std::vector<PointLight>& lights);
 
-private:
-    static constexpr unsigned int INVALID_SHADER_ID = UINT_MAX;
+protected:
 
     unsigned int CreateShader(const char* shaderSoruce, unsigned int shaderType);
 
-    unsigned int shaderProgram_;
+    static constexpr unsigned int INVALID_SHADER_ID = UINT_MAX;
+    unsigned int id_;
 };
 
 #endif

@@ -41,15 +41,15 @@ void DrawDebugLights::SetupDebugCubes(
 
 void DrawDebugLights::SetupVertices(const PointLight& pointLights, std::vector<DebugLightVertex>& vertices)
 {
-    vertices.push_back(DebugLightVertex(glm::vec3(-5.0f, -5.0f, 5.0f) + pointLights.position));
-    vertices.push_back(DebugLightVertex(glm::vec3(5.0f, -5.0f, 5.0f) + pointLights.position));
-    vertices.push_back(DebugLightVertex(glm::vec3(5.0f, 5.0f, 5.0f) + pointLights.position));
-    vertices.push_back(DebugLightVertex(glm::vec3(-5.0f, 5.0f, 5.0f) + pointLights.position));
+    vertices.push_back(DebugLightVertex(glm::vec4(-5.0f, -5.0f, 5.0f, 0.f) + pointLights.position));
+    vertices.push_back(DebugLightVertex(glm::vec4(5.0f, -5.0f, 5.0f, 0.f) + pointLights.position));
+    vertices.push_back(DebugLightVertex(glm::vec4(5.0f, 5.0f, 5.0f, 0.f) + pointLights.position));
+    vertices.push_back(DebugLightVertex(glm::vec4(-5.0f, 5.0f, 5.0f, 0.f) + pointLights.position));
 
-    vertices.push_back(DebugLightVertex(glm::vec3(-5.0f, -5.0f, -5.0f) + pointLights.position));
-    vertices.push_back(DebugLightVertex(glm::vec3(5.0f, -5.0f, -5.0f) + pointLights.position));
-    vertices.push_back(DebugLightVertex(glm::vec3(5.0f, 5.0f, -5.0f) + pointLights.position));
-    vertices.push_back(DebugLightVertex(glm::vec3(-5.0f, 5.0f, -5.0f) + pointLights.position));
+    vertices.push_back(DebugLightVertex(glm::vec4(-5.0f, -5.0f, -5.0f, 0.f) + pointLights.position));
+    vertices.push_back(DebugLightVertex(glm::vec4(5.0f, -5.0f, -5.0f, 0.f) + pointLights.position));
+    vertices.push_back(DebugLightVertex(glm::vec4(5.0f, 5.0f, -5.0f, 0.f) + pointLights.position));
+    vertices.push_back(DebugLightVertex(glm::vec4(-5.0f, 5.0f, -5.0f, 0.f) + pointLights.position));
 }
 
 void DrawDebugLights::SetupIndices(std::vector<unsigned int>& indices, int i)

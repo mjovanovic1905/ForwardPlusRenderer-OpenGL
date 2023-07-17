@@ -124,7 +124,7 @@ ShadowMaps::ShadowMaps(
 , shadowCascadeLevels_(shadowCascadeLevels)
 {
     depthMapTextures_.Init(shadowResolution, depthMapTextureUnit, shadowCascadeLevels_.size() + 1);
-    lightTransformationMatricesGPU_.Init(nullptr, shadowCascadeLevels_.size() + 1);
+    lightTransformationMatricesGPU_.Init(nullptr, GL_UNIFORM_BUFFER, shadowCascadeLevels_.size() + 1, 0);
 }
 
 void ShadowMaps::GenerateShadows()
@@ -137,7 +137,7 @@ void ShadowMaps::GenerateShadows()
         lightTransformationMatricesGPU_.InsertData((glm::mat4*)&lightMatrices[i], i * sizeof(glm::mat4));
     }
 
-    UniformBuffer<void>::UnbindBuffer();
+    lightTransformationMatricesGPU_.UnbindBuffer();
 }
 
 void ShadowMaps::BindShadowMapTexture()

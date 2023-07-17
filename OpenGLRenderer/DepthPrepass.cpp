@@ -23,6 +23,7 @@ void DepthPrepass::PreDraw()
 {
     const Window& window = Window::Get();   
     framebuffer_.Bind();
+    depthTexture_.BindTexture();
     glViewport(0, 0, window.GetWidth(), window.GetHeight());
     glClear(GL_DEPTH_BUFFER_BIT);
 
