@@ -16,6 +16,17 @@ struct PointLight
     float radius;
 }; 
 
+uniform sampler2D depthMap;
+uniform float nearPlane;
+uniform float farPlane;
+uniform mat4 view;
+uniform mat4 proj;
+uniform mat4 viewProj;
+uniform int numLights;
+uniform float screenWidth;
+uniform float screenHeight;
+uniform vec3 cameraPos;
+
 // Shader storage buffer objects
 layout(std430, binding = 1) readonly buffer LightBuffer {
 	PointLight data[];
@@ -25,45 +36,69 @@ layout(std430, binding = 2) writeonly buffer VisibleLightIndicesBuffer {
 	int data[];
 } visibleLightIndicesBuffer;
 
-uniform sampler2D depthMap;
-uniform float nearPlane;
-uniform float farPlane;
-uniform mat4 view;
-uniform mat4 viewProj;
-uniform int numLights;
 
 shared uint visibleLightNum;
-shared int minDepth;
-shared int maxDepth;
+shared uint minDepth;
+shared uint maxDepth;
 shared vec4 frustum[6];
-//shared int visibleLightIndices[1024];
+shared int visibleLightIndices[1024];
 
 
-float LinearizeDepth(float depth, float nearPlane, float farPlane) 
+vec4 CreateFrustumPlane(vec3 p0, vec3 p1, vec3 p2)
+{
+	const vec3 v = p1 - p0;
+	const vec3 u = p2 - p0;
+	const vec3 normal = normalize(cross(u, v));
+	vec4 fp = vec4(normal, 0.0f);
+	fp.w = -dot(fp.xyz, p0);
+	return fp;
+}
+
+// Points must be in order: ftl ftr fbl fbr ntl ntr nbl nbr
+void CreateViewFrustum(vec3 points[8], inout vec4 planes[6])
+{
+
+	// Top Bottom Left Right Near Far
+    planes[0] = CreateFrustumPlane(points[5], points[4], points[0]);
+	planes[1] = CreateFrustumPlane(points[6], points[7], points[3]);
+	planes[2] = CreateFrustumPlane(points[4], points[6], points[2]);
+	planes[3] = CreateFrustumPlane(points[7], points[5], points[3]);
+	planes[4] = CreateFrustumPlane(points[4], points[5], points[7]);
+	planes[5] = CreateFrustumPlane(points[1], points[0], points[2]);
+}
+
+float LinearizeDepth(float depth) 
 {
     float z = depth * 2.0 - 1.0; // back to NDC 
-    return (2.0 *  nearPlane * farPlane) / (farPlane +  nearPlane - z * (farPlane -  nearPlane));	
+    return (2.0 *  0 * 1) / (0 +  1 - z * (0 -  1));	
 }
 
 #define TILE_SIZE 16
 layout(local_size_x = TILE_SIZE, local_size_y = TILE_SIZE, local_size_z = 1) in;
 void main()
 {
-    uint tileId = gl_WorkGroupID.x * gl_NumWorkGroups.y + gl_WorkGroupID.y;
+    uint tileId = gl_WorkGroupID.y * gl_NumWorkGroups.x + gl_WorkGroupID.x;
     uint localThreadId = gl_LocalInvocationIndex;
     uint globalThreadId = tileId * TILE_SIZE + localThreadId;
 
     if (localThreadId == 0) 
     {
-        minDepth= INT_MAX;
+        minDepth= 0xffffffff;
         maxDepth = 0;
         visibleLightNum = 0;
     }
 
-    barrier();
+//    if (gl_GlobalInvocationID.x > screenWidth || gl_GlobalInvocationID.y > screenHeight)
+//    {
+//        return;
+//    }
 
-    float depth = LinearizeDepth(texture(depthMap, gl_GlobalInvocationID.xy / vec2(1024, 600)).r, nearPlane, farPlane); // gl_GlobalInvocationID.xy / screenSize
-    int intDepth = floatBitsToInt(depth);
+    barrier();
+    vec2 text = gl_GlobalInvocationID.xy / vec2(screenWidth - 1, screenHeight - 1);
+	float depth = texture(depthMap, text).r;
+	// Linearize the depth value from depth buffer (must do this because we created it using projection)
+//	depth = LinearizeDepth(texture(depthMap, text).r);
+    uint intDepth = floatBitsToUint(depth);
 
     atomicMin(minDepth, intDepth);
     atomicMax(maxDepth, intDepth);
@@ -72,51 +107,167 @@ void main()
 
     if (localThreadId == 0)
     {
-        float floatMinDepth = intBitsToFloat(minDepth);
-        float floatMaxDepth = intBitsToFloat(maxDepth);
-        vec2 negativeStep = (2.0 * gl_WorkGroupID.xy) / vec2(gl_NumWorkGroups.xy);
-		vec2 positiveStep = (2.0 * gl_WorkGroupID.xy + ivec2(1, 1)) / vec2(gl_NumWorkGroups.xy);
+//        float floatMinDepth = uintBitsToFloat(minDepth);
+//        float floatMaxDepth = uintBitsToFloat(maxDepth);
+//        vec2 negativeStep = (2.0 * vec2(gl_WorkGroupID.xy)) / vec2(gl_NumWorkGroups.xy);
+//		vec2 positiveStep = (2.0 * vec2(gl_WorkGroupID.xy + vec2(1, 1))) / vec2(gl_NumWorkGroups.xy);
+//
+//		frustum[0] = vec4(1.0, 0.0, 0.0, 1.0 - negativeStep.x); // Left
+//		frustum[1] = vec4(-1.0, 0.0, 0.0, -1.0 + positiveStep.x); // Right
+//		frustum[2] = vec4(0.0, 1.0, 0.0, 1.0 - negativeStep.y); // Bottom
+//		frustum[3] = vec4(0.0, -1.0, 0.0, -1.0 + positiveStep.y); // Top
+//		frustum[4] = vec4(0.0, 0.0, -1.0, -floatMinDepth); // Near
+//		frustum[5] = vec4(0.0, 0.0, 1.0, floatMaxDepth); // Far
+//        
+////        mat4 invViewProj = inverse(viewProj);
+//
+//		// Transform the first four planes
+//		for (uint i = 0; i < 4; i++) {
+//			frustum[i] *= viewProj;
+//			frustum[i] /= length(frustum[i].xyz);
+//		}
+////
+//////        mat4 invView = inverse(view);
+////
+////		// Transform the depth planes
+//		frustum[4] *= view;
+//		frustum[4] /= length(frustum[4].xyz);
+//		frustum[5] *= view;
+//		frustum[5] /= length(frustum[5].xyz);
+        
 
-		// Set up starting values for planes using steps and min and max z values
-		frustum[0] = vec4(1.0, 0.0, 0.0, 1.0 - negativeStep.x); // Left
-		frustum[1] = vec4(-1.0, 0.0, 0.0, -1.0 + positiveStep.x); // Right
-		frustum[2] = vec4(0.0, 1.0, 0.0, 1.0 - negativeStep.y); // Bottom
-		frustum[3] = vec4(0.0, -1.0, 0.0, -1.0 + positiveStep.y); // Top
-		frustum[4] = vec4(0.0, 0.0, -1.0, -floatMinDepth); // Near
-		frustum[5] = vec4(0.0, 0.0, 1.0, floatMaxDepth); // Far
+//                mat4 invViewProj = inverse(viewProj);
+//        // Given variables
+//        float floatMinDepth = intBitsToFloat(minDepth);
+//        float floatMaxDepth = intBitsToFloat(maxDepth);
+//
+//        // Step 1: Calculate the inverse view-projection matrix
+//
+//
+//        // Step 2: Extract the near and far planes in clip space
+//        float nearClip = -floatMinDepth;
+//        float farClip = floatMaxDepth;
+//
+//        // Step 3: Create the initial frustum planes in clip space
+//        
+//        frustum[0] = vec4(1.0, 0.0, 0.0, 0.0); // Left
+//        frustum[1] = vec4(-1.0, 0.0, 0.0, 0.0); // Right
+//        frustum[2] = vec4(0.0, 1.0, 0.0, 0.0); // Bottom
+//        frustum[3] = vec4(0.0, -1.0, 0.0, 0.0); // Top
+//        frustum[4] = vec4(0.0, 0.0, -1.0, nearClip); // Near
+//        frustum[5] = vec4(0.0, 0.0, 1.0, farClip); // Far
+//
+////         Step 4: Transform the frustum planes to world space using the inverse view-projection matrix
+//        for (int i = 0; i < 6; i++) {
+//            frustum[i] = invViewProj * frustum[i];
+//            frustum[i] /= length(frustum[i].xyz);
+//        }
 
-		// Transform the first four planes
-		for (uint i = 0; i < 4; i++) {
-			frustum[i] *= viewProj;
-			frustum[i] /= length(frustum[i].xyz);
+        
+        const float minZ = uintBitsToFloat(minDepth);
+		const float maxZ = uintBitsToFloat(maxDepth);
+//
+		const vec2 tileSizeNormalized = ( vec2(TILE_SIZE, TILE_SIZE) / vec2(screenWidth - 1, screenHeight - 1));
+
+		// [0,1]
+		// 0 1
+		// 2 3
+		vec2 points_clip[4];
+		points_clip[2] = gl_WorkGroupID.xy * tileSizeNormalized;
+		points_clip[3] = (gl_WorkGroupID.xy + vec2(1.0, 0.0)) * tileSizeNormalized;
+		points_clip[0] = (gl_WorkGroupID.xy + vec2(0.0, 1.0)) * tileSizeNormalized;
+		points_clip[1] = (gl_WorkGroupID.xy + vec2(1.0, 1.0)) * tileSizeNormalized;
+
+		// [-1, 1]
+		for (uint i = 0; i < 4; i++)
+		{
+			points_clip[i] = points_clip[i] * vec2(2.0f, 2.0f) - vec2(1.0f, 1.0f);
 		}
 
-		// Transform the depth planes
-		frustum[4] *= view;
-		frustum[4] /= length(frustum[4].xyz);
-		frustum[5] *= view;
-		frustum[5] /= length(frustum[5].xyz);
+        mat4 invViewProj = inverse(viewProj);
+		// Points must be in order: ftl ftr fbl fbr ntl ntr nbl nbr
+		vec3 points_world[8];
+		for (uint i = 0; i < 4; i++)
+		{
+			vec4 clipPos = invViewProj * vec4(points_clip[i], 0, 1.0);
+			points_world[i] = clipPos.xyz / clipPos.w;
+		}
+		for (uint i = 0; i < 4; i++)
+		{
+			vec4 clipPos = invViewProj * vec4(points_clip[i], 1, 1.0);
+            points_world[i + 4] = clipPos.xyz / clipPos.w;
+		}
+
+		CreateViewFrustum(points_world, frustum);
+
+//
+//	        const float min_depth = LinearizeDepth(uintBitsToFloat(minDepth));
+//		const float max_depth = LinearizeDepth(uintBitsToFloat(maxDepth));
+//	mat4 inv_projview = inverse(viewProj);
+//
+//	vec2 ndc_size_per_tile = 2.0 * vec2(TILE_SIZE, TILE_SIZE) / vec2(screenWidth, screenHeight);
+//
+//	vec2 ndc_pts[4];  // corners of tile in ndc
+//	ndc_pts[0] = vec2(-1.0, -1.0) + ivec2(gl_WorkGroupID.xy) * ndc_size_per_tile;  // upper left
+//	ndc_pts[1] = vec2(ndc_pts[0].x + ndc_size_per_tile.x, ndc_pts[0].y); // upper right
+//	ndc_pts[2] = ndc_pts[0] + ndc_size_per_tile;
+//	ndc_pts[3] = vec2(ndc_pts[0].x, ndc_pts[0].y + ndc_size_per_tile.y); // lower left
+//
+//	
+//	vec4 temp;
+//	vec3 points[8];
+//	for (int i = 0; i < 4; i++)
+//	{
+//		temp = inv_projview * vec4(ndc_pts[i], nearPlane, 1.0);
+//		points[i] = temp.xyz / temp.w;
+//		temp = inv_projview * vec4(ndc_pts[i], farPlane, 1.0);
+//		points[i + 4] = temp.xyz / temp.w;
+//	}
+//
+//	vec3 temp_normal;
+//	for (int i = 0; i < 4; i++)
+//	{
+//		//Cax+Cby+Ccz+Cd = 0, planes[i] = (Ca, Cb, Cc, Cd)
+//		// temp_normal: normal without normalization
+//		temp_normal = cross(points[i] - cameraPos, points[i + 1] - cameraPos);
+//		temp_normal = normalize(temp_normal);
+//		frustum[i] = vec4(temp_normal, - dot(temp_normal, points[i]));
+//	}
+//	// near plane
+//	{
+//		temp_normal = cross(points[1] - points[0], points[3] - points[0]);
+//		temp_normal = normalize(temp_normal);
+//		frustum[4] = vec4(temp_normal, - dot(temp_normal, points[0]));
+//	}
+//	// far plane
+//	{
+//		temp_normal = cross(points[7] - points[4], points[5] - points[4]);
+//		temp_normal = normalize(temp_normal);
+//		frustum[5] = vec4(temp_normal, - dot(temp_normal, points[4]));
+//	}
+//        
     }
 
     barrier();
 
-    int numThreads = TILE_SIZE * TILE_SIZE;
-    
-    for (int passId = 0; passId < numLights; passId += numThreads)
-    {
-        uint lightId = passId + localThreadId;
+	uint threadCount = TILE_SIZE * TILE_SIZE;
+	uint passCount = (numLights + threadCount - 1) / threadCount;
+	for (uint i = 0; i < passCount; i++) {
+		// Get the lightIndex to test for this thread / pass. If the index is >= light count, then this thread can stop testing lights
+		uint lightId = i * threadCount + gl_LocalInvocationIndex;
+//        uint lightId = localThreadId * lightsPerThread + passId;
         if (lightId >= numLights)
         {
             break;
         }
 
-        vec3 pos = lightBuffer.data[lightId].position.xyz;
+        vec4 pos = lightBuffer.data[lightId].position;
         float r = lightBuffer.data[lightId].radius;
 
         bool isInsideFrustum = true;
         for (int i = 0; i < 6; i++)
         {
-            float distance = dot(vec4(pos, 0), frustum[i]) + r;
+            float distance = dot(vec4(pos.xyz, 1.0), frustum[i]) + r;
             if (distance <= 0.0)
             {
                 isInsideFrustum = false;
@@ -128,19 +279,25 @@ void main()
         {
             uint offset = atomicAdd(visibleLightNum, 1);
             
-            if (offset < 1023)
-            {
-                uint id = tileId * 1024 + offset;
-                visibleLightIndicesBuffer.data[id] = int(lightId);
-            }
+            visibleLightIndices[offset] = int(lightId);
         }
     }
 
+    barrier();
+
     if (localThreadId == 0)
     {
-        uint offset = visibleLightNum == 0 ? 0 : visibleLightNum - 1;
-        uint id = tileId * 1024;
-        visibleLightIndicesBuffer.data[id + offset] = -2;
+        uint offset = tileId * 1024;
+		for (uint i = 0; i < visibleLightNum; i++) {
+			visibleLightIndicesBuffer.data[offset + i] = visibleLightIndices[i];
+		}
+
+		if (visibleLightNum != 1024) {
+			// Unless we have totally filled the entire array, mark it's end with -1
+			// Final shader step will use this to determine where to stop (without having to pass the light count)
+			visibleLightIndicesBuffer.data[offset + visibleLightNum] = -2;
+		}
+
     }
 
 }

@@ -109,10 +109,6 @@ int main()
 {
 
     
-    if (glewIsExtensionSupported("GL_ARB_arrays_of_arrays")) {
-        bool nestoDa = true;
-    }
-    
     if (!InitLibraries())
     {
         ReleaseLibraryData();
@@ -121,7 +117,8 @@ int main()
 
 
     Window& mainWindow = Window::Get();
-    
+    glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+
     Camera camera(mainWindow);
     camera.Init(glm::vec3(0.0f, 100.0f, -24.0f));
 
@@ -256,6 +253,9 @@ int main()
 
     int numCSMPlanes = shadowCascadeLevels.size() + 1;
 
+
+    LightGenerator lightGenerator("../sponza/lights.txt");
+
     ShaderData vertexShaderData;
     vertexShaderData.sourceCode = ReadFile("./Shaders/blinn-phong.vert");
     ShaderData fragmentShaderData;
@@ -271,8 +271,8 @@ int main()
     int workGroupsY = (WINDOW_HEIGHT + (WINDOW_HEIGHT % 16)) / 16;
     shaderProgram.UseProgram();
     shaderProgram.SetUniformValue("farPlane", Camera::FAR_PLANE);
-    shaderProgram.SetUniformValue("numOfTiles", workGroupsY);
-    shaderProgram.SetUniformValue("numLights", 17);
+    shaderProgram.SetUniformValue("numOfTiles", workGroupsX);
+    shaderProgram.SetUniformValue("numLights", (int)lightGenerator.GetLights().size());
     for (size_t i = 0; i < shadowCascadeLevels.size(); ++i)
     {
         shaderProgram.SetUniformValue(("cascadePlaneDistances[" + std::to_string(i) + "]").c_str(), shadowCascadeLevels[i]);
@@ -298,8 +298,6 @@ int main()
     light.ambient = glm::vec3(0.05f, 0.05f, 0.05f);
     light.diffuse = glm::vec3(0.4f, 0.4f, 0.4f);
     light.specular = glm::vec3(0.5f, 0.5f, 0.5f);
-
-    LightGenerator lightGenerator("../sponza/lights.txt");
 
     std::vector<VertexAttributeDescription> attribDescriptions;
     attribDescriptions.push_back(VertexAttributeDescription(3, false, VertexAttributeType::POSITION));
@@ -390,11 +388,14 @@ int main()
     ComputeShader computeShader(computeShaderData, workGroupsX, workGroupsY);
     computeShader.UseProgram();
     computeShader.SetUniformValue("view", camera.GetViewMatrix());
+    computeShader.SetUniformValue("proj", camera.GetProjectionMatrix());
     computeShader.SetUniformValue("viewProj", camera.GetProjectionMatrix() * camera.GetViewMatrix());
     computeShader.SetUniformValue("numLights", (int)lightGenerator.GetLights().size());
     computeShader.SetUniformValue("depthMap", (int)depthPrepass.GetDepthMap().GetTextureUnit());
     computeShader.SetUniformValue("nearPlane", Camera::NEAR_PLANE);
     computeShader.SetUniformValue("farPlane", Camera::FAR_PLANE);
+    computeShader.SetUniformValue("screenWidth", mainWindow.GetWidth());
+    computeShader.SetUniformValue("screenHeight", mainWindow.GetHeight());
     computeShader.SetStorageBuffer("LightBuffer", 1);
     computeShader.SetStorageBuffer("VisibleLightIndicesBuffer", 2);
 
@@ -406,10 +407,10 @@ int main()
         camera.ProcessInput(currentFrame - lastFrame);
         lastFrame = currentFrame;
 
-        shadowMaps.GenerateShadows();
-        shadowMaps.BindShadowMapTexture();
+        //shadowMaps.GenerateShadows();
+        //shadowMaps.BindShadowMapTexture();
 
-        depthMapPass.Draw();
+        //depthMapPass.Draw();
         //drawPass.Draw();
 
         //debugLights.SetModel(model);
@@ -424,12 +425,27 @@ int main()
 
         computeShader.UseProgram();
         computeShader.SetUniformValue("view", camera.GetViewMatrix());
+        computeShader.SetUniformValue("proj", camera.GetProjectionMatrix());
         computeShader.SetUniformValue("viewProj", camera.GetProjectionMatrix() * camera.GetViewMatrix());
+        computeShader.SetUniformValue("numLights", (int)lightGenerator.GetLights().size());
         computeShader.SetUniformValue("depthMap", (int)depthPrepass.GetDepthMap().GetTextureUnit());
+        computeShader.SetUniformValue("nearPlane", Camera::NEAR_PLANE);
+        computeShader.SetUniformValue("farPlane", Camera::FAR_PLANE);
+        computeShader.SetUniformValue("screenWidth", camera.GetPosition());
+        computeShader.SetUniformValue("screenWidth", mainWindow.GetWidth());
+        computeShader.SetUniformValue("screenHeight", mainWindow.GetHeight());
+        computeShader.SetStorageBuffer("LightBuffer", 1);
+        computeShader.SetStorageBuffer("VisibleLightIndicesBuffer", 2);
         depthPrepass.GetDepthMap().BindTexture();
          computeShader.Execute();
          computeShader.Wait();
          drawPass.Draw();
+
+
+         /*debugLights.SetModel(model);
+         debugLights.SetView(camera.GetViewMatrix());
+         debugLights.SetProj(camera.GetProjectionMatrix());
+         debugLights.Draw(debugLightsShader);*/
 
         // const auto proj = glm::perspective(
         // glm::radians(camera.getFOV()), (float)WINDOW_WIDTH / WINDOW_HEIGHT, Camera::NEAR_PLANE,

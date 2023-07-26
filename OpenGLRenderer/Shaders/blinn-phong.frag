@@ -29,18 +29,16 @@ struct DirLight
 
 struct PointLight
 {    
-    vec3 position;
-    
+    vec4 position;
+    vec4 ambient;
+    vec4 diffuse;
+    vec4 specular;
+
     float constant;
     float linear;
     float quadratic;  
-
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-
     float radius;
-};  
+}; 
 
 in vec3 Normal;
 in vec3 FragPosWorldSpace;
@@ -56,14 +54,17 @@ layout (std140, binding = 0) uniform LightSpaceMatrices
     mat4 lightSpaceMatrices[NUM_CSM_PLANES];
 };
 
+layout(std430, binding = 1) buffer LightBuffer {
+	PointLight data[];
+} lightBuffer;
+
 uniform float cascadePlaneDistances[NUM_CSM_PLANES - 1];
 uniform MaterialData material;
 uniform DirLight light;
 uniform sampler2DArray shadowMap;
 uniform vec3 viewPos;
 uniform float farPlane;
-
-uniform PointLight pointLights[17];
+uniform int numLights;
 
 int getShadowMapLayer(int cascadeCount)
 {
@@ -146,25 +147,26 @@ vec3 CalcDirectionalLight(vec3 normal, vec3 viewDir, vec3 objectColor)
 
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 objectColor)
 {
-    float distance = length(light.position - FragPosWorldSpace);
+    float distance = length(light.position.xyz - FragPosWorldSpace);
 
     if (distance > light.radius)
     {
         return vec3(0.0);
     }
+    
+    float attenuation =  1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+    vec3 ambient = light.ambient.xyz * objectColor;
 
-    vec3 ambient = light.ambient * objectColor;
-
-    vec3 lightDir = normalize(light.position - FragPosWorldSpace);
+    vec3 lightDir = normalize(light.position.xyz - FragPosWorldSpace);
     float diffuseStrength = max(dot(lightDir, normal), 0);
-    vec3 diffuse = light.diffuse * diffuseStrength * objectColor;
+    vec3 diffuse = light.diffuse.xyz * diffuseStrength * objectColor;
 
     vec3 halfway = normalize(lightDir + viewDir);
     float specStrenght = pow(max(0, dot(normal, halfway)), material.shine);
     vec3 specularHighlight = vec3(texture(material.specularMap, TexCoords));
-    vec3 specular = light.specular * specStrenght * objectColor * specularHighlight;
+    vec3 specular = light.specular.xyz * specStrenght * objectColor * specularHighlight;
 
-    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+
 
     ambient *= attenuation;
     diffuse *= attenuation;
@@ -179,11 +181,11 @@ void main()
     vec3 normal = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPosWorldSpace);
 
-    vec3 result = CalcDirectionalLight(normal, viewDir, objectColor);
+    vec3 result = vec3(0); //CalcDirectionalLight(normal, viewDir, objectColor);
 
-    for (int i = 0; i < 17; i++)
+    for (int i = 0; i < numLights; i++)
     {
-        result += CalcPointLight(pointLights[i], normal, viewDir, objectColor);
+        result += CalcPointLight(lightBuffer.data[i], normal, viewDir, objectColor);
     }
 
     FragColor = vec4(result, 1.0);

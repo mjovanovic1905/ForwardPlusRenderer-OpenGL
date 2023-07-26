@@ -57,7 +57,6 @@ layout (std140, binding = 0) uniform LightSpaceMatrices
     mat4 lightSpaceMatrices[NUM_CSM_PLANES];
 };
 
-// Shader storage buffer objects
 layout(std430, binding = 1) buffer LightBuffer {
 	PointLight data[];
 } lightBuffer;
@@ -145,41 +144,45 @@ vec3 CalcDirectionalLight(vec3 normal, vec3 viewDir, vec3 objectColor)
     float diffuseStrength = max(dot(lightDir, normal), 0);
     vec3 diffuse = light.diffuse * diffuseStrength * objectColor;
 
-    vec3 specular = vec3(0);
-    ivec2 specularSize = textureSize(material.specularMap, 0);
-    if (specularSize.x > 0)
-    {
-        vec3 halfway = normalize(lightDir + viewDir);
+    vec3 halfway = normalize(lightDir + viewDir);
     float specStrenght = pow(max(0, dot(normal, halfway)), material.shine);
     vec3 specularHighlight = vec3(texture(material.specularMap, TexCoords));
-    specular = light.specular * specStrenght * objectColor * specularHighlight;
+    vec3 specular = light.specular * specStrenght * objectColor * specularHighlight;
 
-    }
-    
-    float shadow = 0;// ShadowCalculation(lightDir, normal);
+    float shadow = ShadowCalculation(lightDir, normal);
     return (ambient + (1.0 - shadow) * (diffuse + specular));
+}
+
+float attenuate(vec3 lightDirection, float radius) {
+	float cutoff = 0.5;
+	float attenuation = dot(lightDirection, lightDirection) / (100.0 * radius);
+	attenuation = 1.0 / (attenuation * 15.0 + 1.0);
+	attenuation = (attenuation - cutoff) / (1.0 - cutoff);
+
+	return clamp(attenuation, 0.0, 1.0);
 }
 
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 objectColor)
 {
     float distance = length(vec3(light.position) - FragPosWorldSpace);
 
+    if (distance > light.radius)
+    {
+        return vec3(0.0);
+    }
+
     vec3 ambient = vec3(light.ambient) * objectColor;
 
     vec3 lightDir = normalize(vec3(light.position) - FragPosWorldSpace);
     float diffuseStrength = max(dot(lightDir, normal), 0);
     vec3 diffuse = vec3(light.diffuse)* diffuseStrength * objectColor;
-
-    vec3 specular = vec3(0);
-    ivec2 specularSize = textureSize(material.specularMap, 0);
-    if (specularSize.x > 0)
-    {
+    
     vec3 halfway = normalize(lightDir + viewDir);
     float specStrenght = pow(max(0, dot(normal, halfway)), material.shine);
     vec3 specularHighlight = vec3(texture(material.specularMap, TexCoords));
     vec3 specular = vec3(light.specular) * specStrenght * objectColor * specularHighlight;
-    }
-    
+ 
+
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
     ambient *= attenuation;
@@ -197,11 +200,17 @@ void main()
 
     vec3 result = vec3(0); //CalcDirectionalLight(normal, viewDir, objectColor);
 
+
+    ivec2 location = ivec2(gl_FragCoord.xy);
+	ivec2 tileID = location / ivec2(16, 16);
+	int offset = tileID.y * numOfTiles + tileID.x;
+
     ivec2 tilePos = ivec2(gl_FragCoord.xy / vec2(16, 16));
     int tileId = tilePos.x * numOfTiles + tilePos.y;
-    int indexStart = tileId * 1024;
+    int indexStart = offset * 1024;
+    int indexEnd = indexStart + 1024;
     int index = indexStart;
-    while (visibleLightIndicesBuffer.data[index] != -2)
+    while (visibleLightIndicesBuffer.data[index] != -2 && index < indexEnd)
     {
         int lightIndex = visibleLightIndicesBuffer.data[index];
         if (lightIndex >= 0)
