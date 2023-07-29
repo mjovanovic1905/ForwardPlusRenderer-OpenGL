@@ -1,6 +1,9 @@
 #version 450 core
 
 //! #define NUM_CSM_PLANES 5
+#define USE_LIGHT_CULLING
+#define TILE_SIZE 16
+#define LIGHT_ID_END -2
 
 struct MaterialData
 {
@@ -71,8 +74,9 @@ uniform DirLight light;
 uniform sampler2DArray shadowMap;
 uniform vec3 viewPos;
 uniform float farPlane;
-uniform int numOfTiles;
+uniform int numOfTilesX;
 uniform int numLights;
+uniform int lightsPerTile;
 
 int getShadowMapLayer(int cascadeCount)
 {
@@ -198,27 +202,21 @@ void main()
     vec3 normal = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPosWorldSpace);
 
-    vec3 result = vec3(0); //CalcDirectionalLight(normal, viewDir, objectColor);
+    vec3 result = CalcDirectionalLight(normal, viewDir, objectColor);
 
 
     ivec2 location = ivec2(gl_FragCoord.xy);
-	ivec2 tileID = location / ivec2(16, 16);
-	int offset = tileID.y * numOfTiles + tileID.x;
+	ivec2 tileId = location / ivec2(TILE_SIZE, TILE_SIZE);
+	int offset = tileId.y * numOfTilesX + tileId.x;
 
-    ivec2 tilePos = ivec2(gl_FragCoord.xy / vec2(16, 16));
-    int tileId = tilePos.x * numOfTiles + tilePos.y;
-    int indexStart = offset * 1024;
-    int indexEnd = indexStart + 1024;
+    int indexStart = offset * lightsPerTile;
+    int indexEnd = indexStart + lightsPerTile;
     int index = indexStart;
-    while (visibleLightIndicesBuffer.data[index] != -2 && index < indexEnd)
+    int lightId = visibleLightIndicesBuffer.data[index];
+    while (lightId != LIGHT_ID_END && index < indexEnd)
     {
-        int lightIndex = visibleLightIndicesBuffer.data[index];
-        if (lightIndex >= 0)
-        {
-            result += CalcPointLight(lightBuffer.data[lightIndex], normal, viewDir, objectColor);
-        }
-        
-        index++;
+        result += CalcPointLight(lightBuffer.data[lightId], normal, viewDir, objectColor);
+        lightId = visibleLightIndicesBuffer.data[++index];
     }
 
     FragColor = vec4(result, 1.0);

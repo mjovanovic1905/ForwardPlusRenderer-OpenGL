@@ -271,8 +271,9 @@ int main()
     int workGroupsY = (WINDOW_HEIGHT + (WINDOW_HEIGHT % 16)) / 16;
     shaderProgram.UseProgram();
     shaderProgram.SetUniformValue("farPlane", Camera::FAR_PLANE);
-    shaderProgram.SetUniformValue("numOfTiles", workGroupsX);
+    shaderProgram.SetUniformValue("numOfTilesX", workGroupsX);
     shaderProgram.SetUniformValue("numLights", (int)lightGenerator.GetLights().size());
+    shaderProgram.SetUniformValue("lightsPerTile", 1024);
     for (size_t i = 0; i < shadowCascadeLevels.size(); ++i)
     {
         shaderProgram.SetUniformValue(("cascadePlaneDistances[" + std::to_string(i) + "]").c_str(), shadowCascadeLevels[i]);
@@ -407,10 +408,10 @@ int main()
         camera.ProcessInput(currentFrame - lastFrame);
         lastFrame = currentFrame;
 
-        //shadowMaps.GenerateShadows();
-        //shadowMaps.BindShadowMapTexture();
+        shadowMaps.GenerateShadows();
+        shadowMaps.BindShadowMapTexture();
 
-        //depthMapPass.Draw();
+        depthMapPass.Draw();
         //drawPass.Draw();
 
         //debugLights.SetModel(model);
