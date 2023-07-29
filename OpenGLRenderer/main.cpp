@@ -125,7 +125,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     
-    if constexpr (MSAA_ENABLED)
+    if constexpr (Graphics::MSAA_ENABLED)
     {
         glEnable(GL_MULTISAMPLE);
     }
@@ -267,8 +267,8 @@ int main()
         ReleaseLibraryData();
         return -1;
     }
-    int workGroupsX = (WINDOW_WIDTH + (WINDOW_WIDTH % 16)) / 16;
-    int workGroupsY = (WINDOW_HEIGHT + (WINDOW_HEIGHT % 16)) / 16;
+    int workGroupsX = mainWindow.GetWidth() / Graphics::ForwardPlus::TILE_SIZE;
+    int workGroupsY = mainWindow.GetHeight() / Graphics::ForwardPlus::TILE_SIZE;
     shaderProgram.UseProgram();
     shaderProgram.SetUniformValue("farPlane", Camera::FAR_PLANE);
     shaderProgram.SetUniformValue("numOfTilesX", workGroupsX);
@@ -305,7 +305,7 @@ int main()
     attribDescriptions.push_back(VertexAttributeDescription(3, false, VertexAttributeType::NORMALS));
     attribDescriptions.push_back(VertexAttributeDescription(2, false, VertexAttributeType::TEX_COORDS));
 
-    ShadowMaps shadowMaps(shadowCascadeLevels, camera, light, SHADOW_RES, 2);
+    ShadowMaps shadowMaps(shadowCascadeLevels, camera, light, Graphics::CSM_SHADOW_RES, 2);
 
     ShaderData skyboxVSData;
     skyboxVSData.sourceCode = ReadFile("./Shaders/cubemap_test.vert");
@@ -351,11 +351,13 @@ int main()
         // skybox.Draw(skyboxShader);
     };
 
-    DepthMapPass depthMapPass(drawFunc, depthMapShader, shadowMaps, SHADOW_RES);
+    DepthMapPass depthMapPass(drawFunc, depthMapShader, shadowMaps, Graphics::CSM_SHADOW_RES);
     ObjectDrawPass drawPass(drawFunc, shaderProgram, camera, light, lightGenerator.GetLights());
     
-    if constexpr (!MSAA_ENABLED)
-    drawPass.UseFXAA();
+    if constexpr (!Graphics::MSAA_ENABLED)
+    {
+        drawPass.UseFXAA();
+    }
     
     float lastFrame = 0.0f;
 

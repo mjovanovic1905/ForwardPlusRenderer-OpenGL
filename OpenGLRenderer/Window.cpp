@@ -29,7 +29,7 @@ Window& Window::Get()
     if (window == nullptr)
     {
         window = new Window();
-        bool success = window->Init(WINDOW_WIDTH, WINDOW_HEIGHT);
+        bool success = window->Init(Engine::WINDOW_WIDTH, Engine::WINDOW_HEIGHT);
         assert(success);
     }
     return *window;
@@ -49,9 +49,9 @@ bool Window::Init(int windowWidth, int windowHeight)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    if constexpr (MSAA_ENABLED)
+    if constexpr (Graphics::MSAA_ENABLED)
     {
-        glfwWindowHint(GLFW_SAMPLES, 4);
+        glfwWindowHint(GLFW_SAMPLES, Graphics::MSAA_SAMPLES);
     }
 
     window_ = glfwCreateWindow(windowWidth, windowHeight, "Renderer", NULL, NULL);
@@ -76,7 +76,7 @@ bool Window::Init(int windowWidth, int windowHeight)
     width_ = newWidth = windowWidth;
     height_ = newHeight = windowHeight;
 
-    if constexpr (!DEBUG_MODE_ENABLED)
+    if constexpr (!Engine::DEBUG_MODE_ENABLED)
     {
         glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
     }

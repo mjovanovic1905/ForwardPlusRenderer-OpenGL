@@ -1,9 +1,19 @@
-static constexpr bool DEBUG_MODE_ENABLED = true;
+namespace Engine
+{
+	static constexpr bool DEBUG_MODE_ENABLED = true;
+	static constexpr int WINDOW_WIDTH = 2048;
+	static constexpr int WINDOW_HEIGHT = 1536;
+}
 
-static constexpr int WINDOW_WIDTH = 2048;
-static constexpr int WINDOW_HEIGHT = 1536;
-static constexpr int SHADOW_RES = 2048;
+namespace Graphics
+{
+	static constexpr int CSM_SHADOW_RES = 2048;
+	static constexpr bool MSAA_ENABLED = true;
+	static constexpr int MSAA_SAMPLES = 4;
 
-static constexpr bool MSAA_ENABLED = true;
-
-static constexpr unsigned int INITIAL_BUFFER_SIZE = 1024;
+	namespace ForwardPlus
+	{
+		static constexpr int LIGHTS_PER_TILE = 1024;
+		static constexpr int TILE_SIZE = 16;
+	}
+}
