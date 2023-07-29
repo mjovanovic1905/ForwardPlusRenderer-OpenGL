@@ -14,8 +14,5 @@ private:
 
 	int workGroupSizeX_;
 	int workGroupSizeY_;
-
-	unsigned int query_;
-
 };
 

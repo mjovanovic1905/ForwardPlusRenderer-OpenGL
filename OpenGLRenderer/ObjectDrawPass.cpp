@@ -4,7 +4,7 @@
 
 #include <GL/glew.h>
 
-#include "Defines.h"
+#include "EngineUtils.h"
 #include "Camera.h"
 #include "DirectionalLight.h"
 #include "Window.h"

@@ -8,9 +8,7 @@ int makeBy16(int number)
 	return result;
 }
 
-PointLightBuffer::PointLightBuffer(const std::vector<PointLight>& lights, int numTiles, int maxLigthsPerTile)
-	: lights_()
-	, lightIndexes_()
+void PointLightBuffer::Init(const std::vector<PointLight>& lights, int numTiles, int maxLigthsPerTile)
 {
 	lights_.Init(lights.data(), GL_SHADER_STORAGE_BUFFER, lights.size(), 1);
 	//lights_.Bind();

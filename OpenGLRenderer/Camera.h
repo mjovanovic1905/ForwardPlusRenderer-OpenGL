@@ -9,11 +9,11 @@ class Window;
 class Camera
 {
 public:
+    Camera();
+
     static constexpr float NEAR_PLANE = 0.1f;
     static constexpr float FAR_PLANE = 2000.f; 
 
-    Camera(Window& window);
-    ~Camera();
     void Init(glm::vec3 position);
     void ProcessInput(float deltaTime);
     glm::mat4 GetViewMatrix() const;
@@ -24,7 +24,6 @@ public:
 private:
     static constexpr float MOVE_SPEED = 150.f;
 
-    const Window& window_;
     glm::vec3 position_;
     glm::vec3 front_;
     glm::vec3 worldUp_;

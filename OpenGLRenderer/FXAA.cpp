@@ -2,8 +2,7 @@
 
 #include <vector>
 
-#include "Defines.h"
-#include "Utils.h"
+#include "EngineUtils.h"
 #include "Texture.h"
 
 FXAA::FXAA(/* args */)
@@ -57,9 +56,9 @@ void FXAA::Apply()
 void FXAA::CreateShaderProgram()
 {
     ShaderData vertexShaderData;
-    vertexShaderData.sourceCode = ReadFile("./Shaders/FXAA.vert");
+    vertexShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/FXAA.vert");
     ShaderData fragmentShaderData;
-    fragmentShaderData.sourceCode = ReadFile("./Shaders/FXAA.frag");
+    fragmentShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/FXAA.frag");
 
     shader_.Init(&vertexShaderData, &fragmentShaderData);
 }

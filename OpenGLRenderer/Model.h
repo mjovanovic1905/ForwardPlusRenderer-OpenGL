@@ -16,7 +16,7 @@ class ShaderProgram;
 class Model 
 {
     public:
-        Model(std::string path, std::string fileName, bool batchMeshes);
+        void Init(std::string path, std::string fileName, bool batchMeshes);
         void Draw(ShaderProgram& shader);	
 
         void SetModel(const glm::mat4 model);

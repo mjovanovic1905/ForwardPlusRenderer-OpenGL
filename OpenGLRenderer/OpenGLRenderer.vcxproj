@@ -29,6 +29,7 @@
     <ClCompile Include="DrawDebugLights.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="FXAA.cpp" />
+    <ClCompile Include="GraphicsUtils.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="PointLightBuffer.cpp" />
     <ClCompile Include="RenderPass.cpp" />
@@ -39,10 +40,10 @@
     <ClCompile Include="ObjectDrawPass.cpp" />
     <ClCompile Include="Renderbuffer.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
-    <ClCompile Include="ShadowMaps.cpp" />
+    <ClCompile Include="CSMShadowMaps.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureArray.cpp" />
-    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="EngineUtils.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -52,7 +53,6 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ComputeShader.h" />
     <ClInclude Include="Cubemap.h" />
-    <ClInclude Include="Defines.h" />
     <ClInclude Include="DepthMapPass.h" />
     <ClInclude Include="DepthPrepass.h" />
     <ClInclude Include="DirectionalLight.h" />
@@ -60,6 +60,7 @@
     <ClInclude Include="DrawDebugLights.h" />
     <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="FXAA.h" />
+    <ClInclude Include="GraphicsUtils.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="PointLightBuffer.h" />
     <ClInclude Include="RenderPass.h" />
@@ -72,12 +73,12 @@
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Renderbuffer.h" />
     <ClInclude Include="ShaderProgram.h" />
-    <ClInclude Include="ShadowMaps.h" />
+    <ClInclude Include="CSMShadowMaps.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureArray.h" />
     <ClInclude Include="StorageBuffer.h" />
-    <ClInclude Include="Utils.h" />
+    <ClInclude Include="EngineUtils.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Window.h" />

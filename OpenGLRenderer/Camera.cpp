@@ -55,9 +55,8 @@ static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
     fovChanged = true;
 }
 
-Camera::Camera(Window& window)
-: window_(window)
-, position_(0.f)
+Camera::Camera()
+: position_(0.f)
 , front_(0.f)
 , up_(0.f)
 , worldUp_(0.f)
@@ -72,8 +71,9 @@ void Camera::Init(glm::vec3 position)
     front_ = glm::vec3(0.0f, 0.0f, -1.0f);
     worldUp_ = glm::vec3(0.0f, 1.0f,  0.0f);
 
-    glfwSetCursorPosCallback(window_.GetGLFWwindow(), mouseCallback);
-    glfwSetScrollCallback(window_.GetGLFWwindow(), scrollCallback);  
+    const auto window = Window::Get();
+    glfwSetCursorPosCallback(window.GetGLFWwindow(), mouseCallback);
+    glfwSetScrollCallback(window.GetGLFWwindow(), scrollCallback);
 }
 
 void Camera::ProcessInput(float deltaTime)
@@ -98,23 +98,24 @@ void Camera::ProcessInput(float deltaTime)
         fovChanged = false;
     }
 
-    if(glfwGetKey(window_.GetGLFWwindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    const auto window = Window::Get();
+    if(glfwGetKey(window.GetGLFWwindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
-        glfwSetWindowShouldClose(window_.GetGLFWwindow(), true);
+        glfwSetWindowShouldClose(window.GetGLFWwindow(), true);
     }
-    if (glfwGetKey(window_.GetGLFWwindow(), GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(window.GetGLFWwindow(), GLFW_KEY_W) == GLFW_PRESS)
     {
         position_ += cameraSpeed * front_;
     }
-    if (glfwGetKey(window_.GetGLFWwindow(), GLFW_KEY_S) == GLFW_PRESS)
+    if (glfwGetKey(window.GetGLFWwindow(), GLFW_KEY_S) == GLFW_PRESS)
     {
         position_ -= cameraSpeed * front_;
     }
-    if (glfwGetKey(window_.GetGLFWwindow(), GLFW_KEY_A) == GLFW_PRESS)
+    if (glfwGetKey(window.GetGLFWwindow(), GLFW_KEY_A) == GLFW_PRESS)
     {
         position_ -= right_ * cameraSpeed;
     }
-    if (glfwGetKey(window_.GetGLFWwindow(), GLFW_KEY_D) == GLFW_PRESS)
+    if (glfwGetKey(window.GetGLFWwindow(), GLFW_KEY_D) == GLFW_PRESS)
     {
         position_ += right_ * cameraSpeed;
     }
@@ -127,14 +128,11 @@ glm::mat4 Camera::GetViewMatrix() const
 
 glm::mat4 Camera::GetProjectionMatrix() const
 {
-    return glm::perspective(glm::radians(fov_), window_.GetWidth() / window_.GetHeight(), NEAR_PLANE, FAR_PLANE);  
+    const auto window = Window::Get();
+    return glm::perspective(glm::radians(fov_), window.GetWidth() / window.GetHeight(), NEAR_PLANE, FAR_PLANE);
 }
 
 glm::vec3 Camera::GetPosition() const
 {
     return position_;
-}
-
-Camera::~Camera()
-{
 }

@@ -8,7 +8,7 @@
 
 std::unordered_map<std::string, Texture> Model::loadedTextures_;
 
-Model::Model(std::string path, std::string fileName, bool batchMeshes)
+void Model::Init(std::string path, std::string fileName, bool batchMeshes)
 {
     LoadModel(path, fileName, batchMeshes ? BatchedMeshCreator() : std::optional<BatchedMeshCreator>());
 }

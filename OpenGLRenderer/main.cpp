@@ -12,9 +12,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Defines.h"
 #include "Window.h"
-#include "Utils.h"
+#include "EngineUtils.h"
 #include "VAO.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
@@ -30,7 +29,7 @@
 #include "Framebuffer.h"
 #include "TextureArray.h"
 #include "StorageBuffer.h"
-#include "ShadowMaps.h"
+#include "CSMShadowMaps.h"
 #include "DepthMapPass.h"
 #include "ObjectDrawPass.h"
 #include "Cubemap.h"
@@ -39,6 +38,8 @@
 #include "DepthPrepass.h"
 #include "PointLightBuffer.h"
 #include "ComputeShader.h"
+
+#include "GraphicsUtils.h"
 
 void renderDepthMap(Texture& deptMap)
 {
@@ -70,9 +71,9 @@ void renderDepthMap(Texture& deptMap)
         vertexBuffer.Bind();
 
         ShaderData vertexShader;
-        vertexShader.sourceCode = ReadFile("./Shaders/depthDBG.vert");
+        vertexShader.sourceCode = EngineUtils::ReadFile("./Shaders/depthDBG.vert");
         ShaderData fragmentShader;
-        fragmentShader.sourceCode = ReadFile("./Shaders/depthDBG.frag");
+        fragmentShader.sourceCode = EngineUtils::ReadFile("./Shaders/depthDBG.frag");
 
         shaderProgram.Init(&vertexShader, &fragmentShader);
         shaderProgram.UseProgram();
@@ -107,300 +108,37 @@ void printFrameTime()
 
 int main()
 {
-
-    
-    if (!InitLibraries())
+    if (!EngineUtils::InitGLFW())
     {
-        ReleaseLibraryData();
+        EngineUtils::ReleaseGLFW();
         return -1;
     }
-
-
     Window& mainWindow = Window::Get();
-    glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
 
-    Camera camera(mainWindow);
+    EngineUtils::SetupOpenGl();
+
+    Camera camera;
     camera.Init(glm::vec3(0.0f, 100.0f, -24.0f));
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    
-    if constexpr (Graphics::MSAA_ENABLED)
-    {
-        glEnable(GL_MULTISAMPLE);
-    }
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    
-    std::vector<float> cubeVertices = {
-        // back face
-        -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-        1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-        1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
-        1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-        -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-        -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
-        // front face
-        -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-        1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
-        1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-        1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-        -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
-        -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-        // left face
-        -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-        -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
-        -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-        -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-        -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-        -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-        // right face
-            1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-            1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-            1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
-            1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-            1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-            1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
-        // bottom face
-        -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-            1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
-            1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-            1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-        -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-        -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-        // top face
-        -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-            1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-            1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
-            1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-        -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-        -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
-    };
-
-    const std::vector<float> planeVertices = {
-        // positions            // normals         // texcoords
-         25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
-        -25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
-        -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
-
-         25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
-        -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
-         25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f
-    };
-
-    std::vector<float> quadVertices = {
-        // positions        // texture Coords
-        -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-            1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-    };
-
-    std::vector<float> shadowCascadeLevels
-    {
-        Camera::FAR_PLANE / 50.0f,
-        Camera::FAR_PLANE / 25.0f,
-        Camera::FAR_PLANE / 10.0f,
-        Camera::FAR_PLANE / 2.0f
-    };
-
-    std::vector<float> skyboxVertices = 
-    {
-        // positions          
-        -1.0f,  1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-
-        -1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-         1.0f, -1.0f,  1.0f
-    };
-
-    int numCSMPlanes = shadowCascadeLevels.size() + 1;
-
-
-    LightGenerator lightGenerator("../sponza/lights.txt");
-
-    ShaderData vertexShaderData;
-    vertexShaderData.sourceCode = ReadFile("./Shaders/blinn-phong.vert");
-    ShaderData fragmentShaderData;
-    fragmentShaderData.sourceCode = ReadFile("./Shaders/blinn-phong-fp.frag");
-    fragmentShaderData.defines.push_back(ShaderDefine("NUM_CSM_PLANES", std::to_string(numCSMPlanes)));
-    ShaderProgram shaderProgram;
-    if (!shaderProgram.Init(&vertexShaderData, &fragmentShaderData))
-    {
-        ReleaseLibraryData();
-        return -1;
-    }
-    int workGroupsX = mainWindow.GetWidth() / Graphics::ForwardPlus::TILE_SIZE;
-    int workGroupsY = mainWindow.GetHeight() / Graphics::ForwardPlus::TILE_SIZE;
-    shaderProgram.UseProgram();
-    shaderProgram.SetUniformValue("farPlane", Camera::FAR_PLANE);
-    shaderProgram.SetUniformValue("numOfTilesX", workGroupsX);
-    shaderProgram.SetUniformValue("numLights", (int)lightGenerator.GetLights().size());
-    shaderProgram.SetUniformValue("lightsPerTile", 1024);
-    for (size_t i = 0; i < shadowCascadeLevels.size(); ++i)
-    {
-        shaderProgram.SetUniformValue(("cascadePlaneDistances[" + std::to_string(i) + "]").c_str(), shadowCascadeLevels[i]);
-    }
-
-    ShaderData depthMapVertexShader;
-    depthMapVertexShader.sourceCode = ReadFile("./Shaders/layeredDepthMap.vert"); 
-    ShaderData depthMapFragmentShader;
-    depthMapFragmentShader.sourceCode = ReadFile("./Shaders/layeredDepthMap.frag"); 
-    ShaderData depthMapGeometryShader;
-    depthMapGeometryShader.sourceCode = ReadFile("./Shaders/layeredDepthMap.geom"); 
-    depthMapGeometryShader.defines.push_back(ShaderDefine("NUM_CSM_PLANES", std::to_string(numCSMPlanes)));
-    ShaderProgram depthMapShader;
-    if (!depthMapShader.Init(&depthMapVertexShader, &depthMapFragmentShader, &depthMapGeometryShader))
-    {
-        ReleaseLibraryData();
-        return -1;
-    }
-
-    
-    DirectionalLight light;
-    light.direction = glm::normalize(glm::vec3(20.0f, 50, 20.0f));
-    light.ambient = glm::vec3(0.05f, 0.05f, 0.05f);
-    light.diffuse = glm::vec3(0.4f, 0.4f, 0.4f);
-    light.specular = glm::vec3(0.5f, 0.5f, 0.5f);
-
-    std::vector<VertexAttributeDescription> attribDescriptions;
-    attribDescriptions.push_back(VertexAttributeDescription(3, false, VertexAttributeType::POSITION));
-    attribDescriptions.push_back(VertexAttributeDescription(3, false, VertexAttributeType::NORMALS));
-    attribDescriptions.push_back(VertexAttributeDescription(2, false, VertexAttributeType::TEX_COORDS));
-
-    ShadowMaps shadowMaps(shadowCascadeLevels, camera, light, Graphics::CSM_SHADOW_RES, 2);
-
-    ShaderData skyboxVSData;
-    skyboxVSData.sourceCode = ReadFile("./Shaders/cubemap_test.vert");
-    ShaderData skyboxFSData;
-    skyboxFSData.sourceCode = ReadFile("./Shaders/cubemap_test.frag");
-    ShaderProgram skyboxShader;
-    skyboxShader.Init(&skyboxVSData, &skyboxFSData);
-
-    std::vector<VertexAttributeDescription> skyboxAttribDescriptions;
-    skyboxAttribDescriptions.push_back(VertexAttributeDescription(3, false, VertexAttributeType::POSITION));
-
-    Cubemap skybox;
-    skybox.Init(skyboxVertices, skyboxAttribDescriptions, "../textures/skybox");
-
-    Model mmodel("../sponza/", "sponza.obj", false);
-    glm::mat4 model = glm::mat4(1.f);
-
-    
-    auto drawFunc = [&](ShaderProgram& shader)
-    {
-        glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 proj = camera.GetProjectionMatrix();
-
-        mmodel.SetView(view);
-        mmodel.SetProj(proj);
-        mmodel.SetModel(model);
-        mmodel.Draw(shader);
-
-        // cubeMesh.setModel(glm::scale(glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0)), glm::vec3(0.5f)));
-        // cubeMesh.setView(view);
-        // cubeMesh.setProj(proj);
-        // cubeMesh.Draw(shader);
-
-        // cubeMesh.setModel(glm::scale(glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0)), glm::vec3(0.5f)));
-        // cubeMesh.Draw(shader);
-
-        // cubeMesh.setModel(glm::scale(glm::rotate(glm::translate(model, glm::vec3(-1.0f, 0.0f, 2.0)), glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0))), glm::vec3(0.25)));
-        // cubeMesh.Draw(shader);
-
-        // glm::mat4 skyboxView = glm::mat4(glm::mat3(view));  
-        // skybox.setProj(proj);
-        // skybox.setView(skyboxView);
-        // skybox.Draw(skyboxShader);
-    };
-
-    DepthMapPass depthMapPass(drawFunc, depthMapShader, shadowMaps, Graphics::CSM_SHADOW_RES);
-    ObjectDrawPass drawPass(drawFunc, shaderProgram, camera, light, lightGenerator.GetLights());
-    
-    if constexpr (!Graphics::MSAA_ENABLED)
-    {
-        drawPass.UseFXAA();
-    }
-    
     float lastFrame = 0.0f;
 
-    DrawDebugLights debugLights(lightGenerator.GetLights());
+    //DrawDebugLights debugLights(lightGenerator.GetLights());
     
     ShaderData debugLightsVertexShaderData;
-    debugLightsVertexShaderData.sourceCode = ReadFile("./Shaders/light_debug.vert");
+    debugLightsVertexShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/light_debug.vert");
 
     ShaderData debugLightsfragmentShaderData;
-    debugLightsfragmentShaderData.sourceCode = ReadFile("./Shaders/light_debug.frag");
+    debugLightsfragmentShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/light_debug.frag");
     
     ShaderProgram debugLightsShader;
     debugLightsShader.Init(&debugLightsVertexShaderData, &debugLightsfragmentShaderData);
 
-    ShaderData depthPrepassVertexShader;
-    depthPrepassVertexShader.sourceCode = ReadFile("./Shaders/depthMap.vert");
+    GraphicsUtils graphicsUtils(camera);
 
-    ShaderData depthPrepassFragmentShader;
-    depthPrepassFragmentShader.sourceCode = ReadFile("./Shaders/depthMap.frag");
-
-    ShaderProgram depthPrepassShader;
-    depthPrepassShader.Init(&depthPrepassVertexShader, &depthPrepassFragmentShader);
-    DepthPrepass depthPrepass(drawFunc, depthPrepassShader);
-
-    PointLightBuffer pointLightBuffer(lightGenerator.GetLights(),workGroupsX * workGroupsY , 1024);
-
-
-    ShaderData computeShaderData;
-    computeShaderData.sourceCode = ReadFile("./Shaders/lightCulling.comp");
-
-    ComputeShader computeShader(computeShaderData, workGroupsX, workGroupsY);
-    computeShader.UseProgram();
-    computeShader.SetUniformValue("view", camera.GetViewMatrix());
-    computeShader.SetUniformValue("proj", camera.GetProjectionMatrix());
-    computeShader.SetUniformValue("viewProj", camera.GetProjectionMatrix() * camera.GetViewMatrix());
-    computeShader.SetUniformValue("numLights", (int)lightGenerator.GetLights().size());
-    computeShader.SetUniformValue("depthMap", (int)depthPrepass.GetDepthMap().GetTextureUnit());
-    computeShader.SetUniformValue("nearPlane", Camera::NEAR_PLANE);
-    computeShader.SetUniformValue("farPlane", Camera::FAR_PLANE);
-    computeShader.SetUniformValue("screenWidth", mainWindow.GetWidth());
-    computeShader.SetUniformValue("screenHeight", mainWindow.GetHeight());
-    computeShader.SetStorageBuffer("LightBuffer", 1);
-    computeShader.SetStorageBuffer("VisibleLightIndicesBuffer", 2);
+    ObjectDrawPass drawPass = graphicsUtils.SetupMainPass();
+    DepthMapPass depthMapPass = graphicsUtils.SetupCSMDepthMapPass();
+    DepthPrepass depthPrepass = graphicsUtils.SetupDepthPrepass();
+    ComputeShader computeShader = graphicsUtils.SetupLightCulling(depthPrepass);
 
     while(!mainWindow.WindowShouldClose())
     {
@@ -409,9 +147,6 @@ int main()
         float currentFrame = glfwGetTime();
         camera.ProcessInput(currentFrame - lastFrame);
         lastFrame = currentFrame;
-
-        shadowMaps.GenerateShadows();
-        shadowMaps.BindShadowMapTexture();
 
         depthMapPass.Draw();
         //drawPass.Draw();
@@ -422,27 +157,21 @@ int main()
         //debugLights.Draw(debugLightsShader);
 
         //depthPrepass.
+        graphicsUtils.GetPointLightBuffer().Bind();
         depthPrepass.Draw();
 
          //renderDepthMap(depthPrepass.GetDepthMap());
 
+        
         computeShader.UseProgram();
         computeShader.SetUniformValue("view", camera.GetViewMatrix());
         computeShader.SetUniformValue("proj", camera.GetProjectionMatrix());
         computeShader.SetUniformValue("viewProj", camera.GetProjectionMatrix() * camera.GetViewMatrix());
-        computeShader.SetUniformValue("numLights", (int)lightGenerator.GetLights().size());
-        computeShader.SetUniformValue("depthMap", (int)depthPrepass.GetDepthMap().GetTextureUnit());
-        computeShader.SetUniformValue("nearPlane", Camera::NEAR_PLANE);
-        computeShader.SetUniformValue("farPlane", Camera::FAR_PLANE);
-        computeShader.SetUniformValue("screenWidth", camera.GetPosition());
-        computeShader.SetUniformValue("screenWidth", mainWindow.GetWidth());
-        computeShader.SetUniformValue("screenHeight", mainWindow.GetHeight());
-        computeShader.SetStorageBuffer("LightBuffer", 1);
-        computeShader.SetStorageBuffer("VisibleLightIndicesBuffer", 2);
         depthPrepass.GetDepthMap().BindTexture();
-         computeShader.Execute();
-         computeShader.Wait();
-         drawPass.Draw();
+        computeShader.Execute();
+        computeShader.Wait();
+        
+        drawPass.Draw();
 
 
          /*debugLights.SetModel(model);

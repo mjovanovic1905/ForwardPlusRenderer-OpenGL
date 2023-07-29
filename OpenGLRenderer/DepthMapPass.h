@@ -6,7 +6,7 @@
 #include "RenderPass.h"
 #include "Framebuffer.h"
 
-class ShadowMaps;
+class CSMShadowMaps;
 
 class DepthMapPass : public RenderPass
 {
@@ -14,7 +14,7 @@ public:
     DepthMapPass(
         const std::function<void(ShaderProgram&)>& Draw,
         const ShaderProgram& shader,
-        const ShadowMaps& shadowMaps,
+        CSMShadowMaps& shadowMaps,
         unsigned int resolution);
 
     virtual ~DepthMapPass() override;
@@ -25,7 +25,7 @@ public:
 private:
     Framebuffer framebuffer_;
     unsigned int shadowResolution_;
-
+    CSMShadowMaps& shadowMaps_;
 };
 
 #endif

@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 
-#include "Defines.h"
+#include "EngineUtils.h"
 #include "Camera.h"
 #include "Window.h"
 

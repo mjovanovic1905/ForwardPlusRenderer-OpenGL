@@ -2,19 +2,20 @@
 
 #include <GL/glew.h>
 
-#include "ShadowMaps.h"
+#include "CSMShadowMaps.h"
 #include "Window.h"
 
 DepthMapPass::DepthMapPass(
     const std::function<void(ShaderProgram&)>& Draw,
     const ShaderProgram& shader,
-    const ShadowMaps& shadowMaps,
+    CSMShadowMaps& shadowMaps,
     unsigned int resolution)
 : RenderPass(Draw, shader)
 , shadowResolution_(resolution)
+, shadowMaps_(shadowMaps)
 {
     framebuffer_.Init();
-    framebuffer_.AttachTexture(GL_DEPTH_ATTACHMENT, shadowMaps.GetShadowMapTextureId(), GL_TEXTURE_3D);
+    framebuffer_.AttachTexture(GL_DEPTH_ATTACHMENT, shadowMaps_.GetShadowMapTextureId(), GL_TEXTURE_3D);
     assert(framebuffer_.IsComplete());
     Framebuffer::BindDefault();
 }
@@ -26,6 +27,9 @@ void DepthMapPass::PreDraw()
     glViewport(0, 0, shadowResolution_, shadowResolution_);
     glCullFace(GL_FRONT);
     glClear(GL_DEPTH_BUFFER_BIT);
+
+    shadowMaps_.GenerateShadows();
+    shadowMaps_.BindShadowMapTexture();
 
     shader_.UseProgram();
     shader_.SetUniformBuffer("LightSpaceMatrices", 0);

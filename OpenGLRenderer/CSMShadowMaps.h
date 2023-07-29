@@ -13,11 +13,13 @@
 
 //Abstraction for cascaded shadow mapping
 
-class ShadowMaps
+class CSMShadowMaps
 {
 public:
-    ShadowMaps(
-        const std::vector<float>& shadowCascadeLevels,
+
+    CSMShadowMaps() = default;
+
+    void Init(
         const Camera& camera,
         const DirectionalLight& light,
         int shadowResolution,
@@ -28,8 +30,10 @@ public:
     void BindShadowMapTexture();
     unsigned int GetLightTransformationId() const { return lightTransformationMatricesGPU_.GetId(); }
     unsigned int GetShadowMapTextureId() const { return depthMapTextures_.GetId(); }
+    const std::vector<float>& GetShadowCascadeLevels() const { return shadowCascadeLevels_; }
+    int GetNumCSMPlanes() const { return shadowCascadeLevels_.size() + 1; }
 
-    ~ShadowMaps();
+    ~CSMShadowMaps();
 
 private:
     static std::vector<glm::mat4> GetLightSpaceMatrices(
@@ -47,8 +51,8 @@ private:
         const glm::mat4& proj,
         const glm::mat4& view);
 
-    const Camera camera_;
-    const DirectionalLight light_;
+    Camera camera_;
+    DirectionalLight light_;
 
     std::vector<float> shadowCascadeLevels_;
     StorageBuffer<glm::mat4> lightTransformationMatricesGPU_;

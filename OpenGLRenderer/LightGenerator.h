@@ -10,7 +10,7 @@
 class LightGenerator
 {
 public:
-    LightGenerator(std::string filePath);
+    LightGenerator();
     ~LightGenerator();
 
     const std::vector<PointLight>& GetLights() const { return lights_; }

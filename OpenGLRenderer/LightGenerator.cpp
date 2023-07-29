@@ -9,7 +9,7 @@ const glm::vec4 LightGenerator::LIGHT_MIN_BOUNDS = glm::vec4(-2000.0f, 5.0f, -10
 const glm::vec4 LightGenerator::LIGHT_MAX_BOUNDS = glm::vec4(2000.0f, 500.0f, 1000.0f, 0.0f);
 
 
-LightGenerator::LightGenerator(std::string filePath)
+LightGenerator::LightGenerator()
 {
     std::random_device rd;
 	std::mt19937 gen(rd());

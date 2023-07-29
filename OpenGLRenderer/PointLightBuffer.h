@@ -8,7 +8,7 @@
 class PointLightBuffer
 {
 public:
-	PointLightBuffer(const std::vector<PointLight>& lights, int numTiles, int maxLigthsPerTile);
+	void Init(const std::vector<PointLight>& lights, int numTiles, int maxLigthsPerTile);
 	void Bind();
 	
 private:

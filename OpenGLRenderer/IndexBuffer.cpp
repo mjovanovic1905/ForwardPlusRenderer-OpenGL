@@ -1,5 +1,5 @@
 #include "IndexBuffer.h"
-#include "Defines.h"
+#include "EngineUtils.h"
 
 #include "GL/glew.h"
 #include <algorithm>

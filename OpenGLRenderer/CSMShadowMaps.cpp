@@ -1,8 +1,8 @@
-#include "ShadowMaps.h"
+#include "CSMShadowMaps.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
-std::vector<glm::vec4> ShadowMaps::GetFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view)
+std::vector<glm::vec4> CSMShadowMaps::GetFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view)
 {
     const auto inv = glm::inverse(proj * view);
 
@@ -22,7 +22,7 @@ std::vector<glm::vec4> ShadowMaps::GetFrustumCornersWorldSpace(const glm::mat4& 
     return frustumCorners;
 }
 
-glm::mat4 ShadowMaps::GetLightSpaceMatrix(
+glm::mat4 CSMShadowMaps::GetLightSpaceMatrix(
     const float nearPlane,
     const float farPlane,
     const Camera& camera,
@@ -87,7 +87,7 @@ glm::mat4 ShadowMaps::GetLightSpaceMatrix(
     return lightProjection * lightView;
 }
 
-std::vector<glm::mat4> ShadowMaps::GetLightSpaceMatrices(
+std::vector<glm::mat4> CSMShadowMaps::GetLightSpaceMatrices(
     const std::vector<float>& shadowCascadeLevels,
     const Camera& camera,
     const glm::vec3& lightDir)
@@ -112,22 +112,26 @@ std::vector<glm::mat4> ShadowMaps::GetLightSpaceMatrices(
     return ret;
 }
 
-ShadowMaps::ShadowMaps(
-    const std::vector<float>& shadowCascadeLevels,
+void CSMShadowMaps::Init(
     const Camera& camera,
     const DirectionalLight& light,
     int shadowResolution,
     int depthMapTextureUnit
 )
-: camera_(camera)
-, light_(light)
-, shadowCascadeLevels_(shadowCascadeLevels)
 {
+    camera_ = camera;
+    light_ = light;
+    shadowCascadeLevels_ = {
+            Camera::FAR_PLANE / 50.0f,
+            Camera::FAR_PLANE / 25.0f,
+            Camera::FAR_PLANE / 10.0f,
+            Camera::FAR_PLANE / 2.0f
+    };
     depthMapTextures_.Init(shadowResolution, depthMapTextureUnit, shadowCascadeLevels_.size() + 1);
     lightTransformationMatricesGPU_.Init(nullptr, GL_UNIFORM_BUFFER, shadowCascadeLevels_.size() + 1, 0);
 }
 
-void ShadowMaps::GenerateShadows()
+void CSMShadowMaps::GenerateShadows()
 {
     const auto lightMatrices = GetLightSpaceMatrices(shadowCascadeLevels_, camera_, light_.direction);
     lightTransformationMatricesGPU_.Bind();
@@ -140,11 +144,11 @@ void ShadowMaps::GenerateShadows()
     lightTransformationMatricesGPU_.UnbindBuffer();
 }
 
-void ShadowMaps::BindShadowMapTexture()
+void CSMShadowMaps::BindShadowMapTexture()
 {
     depthMapTextures_.Bind();
 }
 
-ShadowMaps::~ShadowMaps()
+CSMShadowMaps::~CSMShadowMaps()
 {
 }
