@@ -1,24 +1,21 @@
 #version 450 core
 
-//! #define NUM_CSM_PLANES 5
-#define USE_LIGHT_CULLING
-#define TILE_SIZE 16
-#define LIGHT_ID_END -2
+// --------------------------------
+// These defines come from the runtime, the comments are here to address the IDE errors
+//!#define NUM_CSM_PLANES 5
+//!#define PointLight int
+//!#define TILE_SIZE 1
+//!#define LIGHTS_PER_TILE 1
+//!#define USE_LIGHT_CULLING
+//!#define LIGHT_ID_END -2
+// --------------------------------
+
 
 struct MaterialData
 {
     sampler2D diffuseMap;
     sampler2D specularMap;
     float shine;
-};
-
-struct LightProperties 
-{
-    vec3 position;
-  
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
 };
 
 struct DirLight
@@ -28,23 +25,7 @@ struct DirLight
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
-}; 
-
-
-struct PointLight
-{    
-    vec4 position;
-    vec4 ambient;
-    vec4 diffuse;
-    vec4 specular;
-
-    float constant;
-    float linear;
-    float quadratic;  
-    float radius;
-}; 
-
-
+};
 
 in vec3 Normal;
 in vec3 FragPosWorldSpace;
@@ -53,20 +34,20 @@ in vec4 FragPosViewSpace;
 
 out vec4 FragColor;
 
-// NUM_CSM_PLANES is a static define that needs to be supplied to the shader
-// via the ShaderData struct before building the shader itself
 layout (std140, binding = 0) uniform LightSpaceMatrices
 {
     mat4 lightSpaceMatrices[NUM_CSM_PLANES];
 };
 
-layout(std430, binding = 1) buffer LightBuffer {
-	PointLight data[];
+layout(std430, binding = 1) readonly buffer LightBuffer {
+    PointLight data[];
 } lightBuffer;
 
+#ifdef USE_LIGHT_CULLING
 layout(std430, binding = 2) readonly buffer VisibleLightIndicesBuffer {
-	int data[];
+    int data[];
 } visibleLightIndicesBuffer;
+#endif
 
 uniform float cascadePlaneDistances[NUM_CSM_PLANES - 1];
 uniform MaterialData material;
@@ -74,11 +55,14 @@ uniform DirLight light;
 uniform sampler2DArray shadowMap;
 uniform vec3 viewPos;
 uniform float farPlane;
-uniform int numOfTilesX;
-uniform int numLights;
-uniform int lightsPerTile;
 
-int getShadowMapLayer(int cascadeCount)
+#ifdef USE_LIGHT_CULLING
+uniform int numOfTilesX;
+#else
+uniform int numLights;
+#endif
+
+int GetShadowMapLayer(int cascadeCount)
 {
     float depth = abs(FragPosViewSpace.z);
     int layer = -1;
@@ -102,7 +86,7 @@ int getShadowMapLayer(int cascadeCount)
 float ShadowCalculation(vec3 lightDir, vec3 normal)
 {
     int cascadeCount = NUM_CSM_PLANES - 1; 
-    int layer = getShadowMapLayer(cascadeCount);
+    int layer = GetShadowMapLayer(cascadeCount);
     vec4 fragPosLightSpace = lightSpaceMatrices[layer] * vec4(FragPosWorldSpace, 1.0);
 
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -196,6 +180,41 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 objectColo
     return ambient + diffuse + specular;
 }
 
+#ifdef USE_LIGHT_CULLING
+vec3 AddPointLights(vec3 normal, vec3 viewDir, vec3 objectColor)
+{
+   ivec2 location = ivec2(gl_FragCoord.xy);
+   ivec2 tileId = location / ivec2(TILE_SIZE, TILE_SIZE);
+   int offset = tileId.y * numOfTilesX + tileId.x;
+
+   int indexStart = offset * LIGHTS_PER_TILE;
+   int indexEnd = indexStart + LIGHTS_PER_TILE;
+   int index = indexStart;
+   int lightId = visibleLightIndicesBuffer.data[index];
+
+   vec3 result = vec3(0.0);
+   while (lightId != LIGHT_ID_END && index < indexEnd)
+   {
+       result += CalcPointLight(lightBuffer.data[lightId], normal, viewDir, objectColor);
+       lightId = visibleLightIndicesBuffer.data[++index];
+   }
+
+   return result;
+}
+#else
+vec3 AddPointLights(vec3 normal, vec3 viewDir, vec3 objectColor)
+{
+   vec3 result = vec3(0.0);
+
+   for (int i = 0; i < numLights; i++)
+   {
+       result += CalcPointLight(lightBuffer.data[i], normal, viewDir, objectColor);
+   }
+
+   return result;
+}
+#endif
+
 void main() 
 {
     vec3 objectColor = vec3(texture(material.diffuseMap, TexCoords));
@@ -204,20 +223,7 @@ void main()
 
     vec3 result = CalcDirectionalLight(normal, viewDir, objectColor);
 
-
-    ivec2 location = ivec2(gl_FragCoord.xy);
-	ivec2 tileId = location / ivec2(TILE_SIZE, TILE_SIZE);
-	int offset = tileId.y * numOfTilesX + tileId.x;
-
-    int indexStart = offset * lightsPerTile;
-    int indexEnd = indexStart + lightsPerTile;
-    int index = indexStart;
-    int lightId = visibleLightIndicesBuffer.data[index];
-    while (lightId != LIGHT_ID_END && index < indexEnd)
-    {
-        result += CalcPointLight(lightBuffer.data[lightId], normal, viewDir, objectColor);
-        lightId = visibleLightIndicesBuffer.data[++index];
-    }
+    result += AddPointLights(normal, viewDir, objectColor);
 
     FragColor = vec4(result, 1.0);
 }

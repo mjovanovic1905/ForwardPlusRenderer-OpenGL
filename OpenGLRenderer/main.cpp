@@ -122,7 +122,6 @@ int main()
 
     float lastFrame = 0.0f;
 
-    //DrawDebugLights debugLights(lightGenerator.GetLights());
     
     ShaderData debugLightsVertexShaderData;
     debugLightsVertexShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/light_debug.vert");
@@ -134,6 +133,8 @@ int main()
     debugLightsShader.Init(&debugLightsVertexShaderData, &debugLightsfragmentShaderData);
 
     GraphicsUtils graphicsUtils(camera);
+
+    DrawDebugLights debugLights(graphicsUtils.lightGenerator_.GetLights());
 
     ObjectDrawPass drawPass = graphicsUtils.SetupMainPass();
     DepthMapPass depthMapPass = graphicsUtils.SetupCSMDepthMapPass();
@@ -151,33 +152,32 @@ int main()
         depthMapPass.Draw();
         //drawPass.Draw();
 
-        //debugLights.SetModel(model);
         //debugLights.SetView(camera.GetViewMatrix());
         //debugLights.SetProj(camera.GetProjectionMatrix());
-        //debugLights.Draw(debugLightsShader);
+     
 
         //depthPrepass.
-        graphicsUtils.GetPointLightBuffer().Bind();
-        depthPrepass.Draw();
+        if constexpr (EngineUtils::USE_LIGHT_CULLING)
+        {
+            graphicsUtils.GetPointLightBuffer().Bind();
+            depthPrepass.Draw();
 
-         //renderDepthMap(depthPrepass.GetDepthMap());
+            //renderDepthMap(depthPrepass.GetDepthMap());
 
-        
-        computeShader.UseProgram();
-        computeShader.SetUniformValue("view", camera.GetViewMatrix());
-        computeShader.SetUniformValue("proj", camera.GetProjectionMatrix());
-        computeShader.SetUniformValue("viewProj", camera.GetProjectionMatrix() * camera.GetViewMatrix());
-        depthPrepass.GetDepthMap().BindTexture();
-        computeShader.Execute();
-        computeShader.Wait();
+
+            computeShader.UseProgram();
+            computeShader.SetUniformValue("invViewProj", glm::inverse(camera.GetProjectionMatrix() * camera.GetViewMatrix()));
+            depthPrepass.GetDepthMap().BindTexture();
+            computeShader.Execute();
+            computeShader.Wait();
+        }
         
         drawPass.Draw();
 
-
-         /*debugLights.SetModel(model);
-         debugLights.SetView(camera.GetViewMatrix());
-         debugLights.SetProj(camera.GetProjectionMatrix());
-         debugLights.Draw(debugLightsShader);*/
+        debugLights.SetModel(glm::mat4(1.f));
+        debugLights.SetView(camera.GetViewMatrix());
+        debugLights.SetProj(camera.GetProjectionMatrix());
+        debugLights.Draw(debugLightsShader);
 
         // const auto proj = glm::perspective(
         // glm::radians(camera.getFOV()), (float)WINDOW_WIDTH / WINDOW_HEIGHT, Camera::NEAR_PLANE,

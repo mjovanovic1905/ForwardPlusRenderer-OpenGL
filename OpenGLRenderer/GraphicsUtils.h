@@ -23,9 +23,11 @@ public:
 	ComputeShader SetupLightCulling(DepthPrepass& depthPrepass);
 	PointLightBuffer& GetPointLightBuffer() { return pointLightBuffer_; }
 
+	LightGenerator lightGenerator_;
 private:
 
 	std::vector<ShaderDefine> GetCSMDefines() const;
+	std::vector<ShaderDefine> GetLightCullingDefines() const;
 
 	Camera& camera_;
 	PointLightBuffer pointLightBuffer_;
@@ -33,7 +35,6 @@ private:
 	CSMShadowMaps csmShadowMaps_;
 	std::function<void(ShaderProgram&)> drawFunc_;
 	Model sponzaModel_;
-	LightGenerator lightGenerator_;
 	int workGroupsX_;
 	int workGroupsY_;
 };

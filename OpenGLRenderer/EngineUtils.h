@@ -18,6 +18,9 @@ public:
 
 	static constexpr int LIGHTS_PER_TILE = 1024;
 	static constexpr int TILE_SIZE = 16;
+	static constexpr int LIGHT_ID_END = -2;
+	
+	static constexpr bool USE_LIGHT_CULLING = true;
 
 	static bool InitGLFW();
 	static void ReleaseGLFW();

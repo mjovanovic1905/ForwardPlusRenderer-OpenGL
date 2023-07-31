@@ -23,13 +23,12 @@ private:
         glm::vec3 position;
     };
     
-    void SetupDebugCubes(
+    void SetupDebugSpheres(
         const std::vector<PointLight>& pointLights,
         std::vector<DebugLightVertex>& vertices,
         std::vector<unsigned int>& indices);
     
     void SetupVertices(const PointLight& pointLights, std::vector<DebugLightVertex>& vertices);
-    void SetupIndices(std::vector<unsigned int>& indices, int i);
 };
 
 #endif

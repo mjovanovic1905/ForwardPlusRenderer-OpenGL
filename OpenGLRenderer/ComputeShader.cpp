@@ -7,7 +7,7 @@ ComputeShader::ComputeShader(const ShaderData& computeShaderData, int workGroupS
 	, workGroupSizeX_(workGroupSizeX)
 	, workGroupSizeY_(workGroupSizeY)
 {
-	int shader = CreateShader(computeShaderData.sourceCode.c_str(), GL_COMPUTE_SHADER);
+	int shader = CreateShader(computeShaderData.ToString().c_str(), GL_COMPUTE_SHADER);
 	assert(shader != INVALID_SHADER_ID);
 
 	id_ = glCreateProgram();

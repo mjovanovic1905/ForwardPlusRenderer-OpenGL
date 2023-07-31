@@ -18,6 +18,7 @@ std::string ShaderData::ToString() const
     {
         allDefines.append(define.ToString());
     }
+    allDefines.append(includes + "\n\n\n");
     std::string findStr = "#version 450 core";
     size_t mainPos = sourceCode.find(findStr) + findStr.size();
     std::string res = sourceCode;

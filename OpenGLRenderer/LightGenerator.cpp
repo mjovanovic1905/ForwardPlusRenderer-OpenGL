@@ -6,7 +6,7 @@
 
 const unsigned int LightGenerator::NUM_OF_LIGHTS = 1024;
 const glm::vec4 LightGenerator::LIGHT_MIN_BOUNDS = glm::vec4(-2000.0f, 5.0f, -1000.0f, 0.0f);
-const glm::vec4 LightGenerator::LIGHT_MAX_BOUNDS = glm::vec4(2000.0f, 500.0f, 1000.0f, 0.0f);
+const glm::vec4 LightGenerator::LIGHT_MAX_BOUNDS = glm::vec4(2000.0f, 1000.0f, 1000.0f, 0.0f);
 
 
 LightGenerator::LightGenerator()
@@ -23,8 +23,8 @@ LightGenerator::LightGenerator()
         light.diffuse = glm::vec4(0.8f, 0.8f, 0.8f, 0.0f);
         light.specular = glm::vec4(1.f, 1.f, 1.f, 0.0f);
         light.constant = 1.0f;
-        light.linear = 0.045f;
-        light.quadratic = 0.0075f;
+        light.linear = 0.0045f;
+        light.quadratic = 0.00075f;
         light.radius = 100;
 
         lights_.push_back(light);

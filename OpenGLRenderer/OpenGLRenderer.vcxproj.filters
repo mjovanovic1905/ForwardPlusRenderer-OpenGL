@@ -111,6 +111,9 @@
     <ClCompile Include="GraphicsUtils.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="CubedSphere.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IndexBuffer.h">
@@ -212,6 +215,9 @@
     <ClInclude Include="GraphicsUtils.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="CubedSphere.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\basic.frag">
@@ -293,6 +299,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\blinn-phong-fp.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\shared.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

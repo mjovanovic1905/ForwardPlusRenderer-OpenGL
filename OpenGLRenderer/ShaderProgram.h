@@ -22,6 +22,7 @@ struct ShaderDefine
 
 struct ShaderData
 {
+    std::string includes;
     std::string sourceCode;
     std::vector<ShaderDefine> defines;
     std::string ToString() const;

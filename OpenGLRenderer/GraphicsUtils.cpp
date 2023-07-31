@@ -42,6 +42,14 @@ ObjectDrawPass GraphicsUtils::SetupMainPass()
     ShaderData fragmentShaderData;
     fragmentShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/blinn-phong-fp.frag");
     fragmentShaderData.defines = GetCSMDefines();
+    fragmentShaderData.includes = EngineUtils::ReadFile("./Shaders/shared.glsl");
+    
+    if constexpr (EngineUtils::USE_LIGHT_CULLING)
+    {
+        auto lightCullingDefines = GetLightCullingDefines();
+        fragmentShaderData.defines.insert(fragmentShaderData.defines.end(), lightCullingDefines.begin(), lightCullingDefines.end());
+    }
+    
     ShaderProgram shaderProgram;
     if (!shaderProgram.Init(&vertexShaderData, &fragmentShaderData))
     {
@@ -51,10 +59,16 @@ ObjectDrawPass GraphicsUtils::SetupMainPass()
 
     shaderProgram.UseProgram();
     shaderProgram.SetUniformValue("farPlane", Camera::FAR_PLANE);
-    shaderProgram.SetUniformValue("numOfTilesX", workGroupsX_);
-    shaderProgram.SetUniformValue("numLights", (int)lightGenerator_.GetLights().size());
-    shaderProgram.SetUniformValue("lightsPerTile", EngineUtils::LIGHTS_PER_TILE);
-
+    if constexpr (EngineUtils::USE_LIGHT_CULLING)
+    {
+        shaderProgram.SetUniformValue("lightsPerTile", EngineUtils::LIGHTS_PER_TILE);
+        shaderProgram.SetUniformValue("numOfTilesX", workGroupsX_);
+    }
+    else
+    {
+        shaderProgram.SetUniformValue("numLights", (int)lightGenerator_.GetLights().size());
+    }
+    
 
     const auto& shadowCascadeLevels = csmShadowMaps_.GetShadowCascadeLevels();
     for (size_t i = 0; i < shadowCascadeLevels.size(); ++i)
@@ -112,20 +126,19 @@ ComputeShader GraphicsUtils::SetupLightCulling(DepthPrepass& depthPrepass)
 
     ShaderData computeShaderData;
     computeShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/lightCulling.comp");
+    computeShaderData.defines = GetLightCullingDefines();
+    computeShaderData.includes = EngineUtils::ReadFile("./Shaders/shared.glsl");
 
     const auto& window = Window::Get();
 
     ComputeShader computeShader(computeShaderData, workGroupsX_, workGroupsY_);
     computeShader.UseProgram();
-    computeShader.SetUniformValue("view", camera_.GetViewMatrix());
-    computeShader.SetUniformValue("proj", camera_.GetProjectionMatrix());
-    computeShader.SetUniformValue("viewProj", camera_.GetProjectionMatrix() * camera_.GetViewMatrix());
+    computeShader.SetUniformValue("invViewProj", glm::inverse(camera_.GetProjectionMatrix() * camera_.GetViewMatrix()));
     computeShader.SetUniformValue("numLights", (int)lightGenerator_.GetLights().size());
     computeShader.SetUniformValue("depthMap", (int)depthPrepass.GetDepthMap().GetTextureUnit());
-    computeShader.SetUniformValue("nearPlane", Camera::NEAR_PLANE);
-    computeShader.SetUniformValue("farPlane", Camera::FAR_PLANE);
     computeShader.SetUniformValue("screenWidth", window.GetWidth());
     computeShader.SetUniformValue("screenHeight", window.GetHeight());
+    computeShader.SetUniformValue("lightsPerTile", EngineUtils::LIGHTS_PER_TILE);
     computeShader.SetStorageBuffer("LightBuffer", 1);
     computeShader.SetStorageBuffer("VisibleLightIndicesBuffer", 2);
     
@@ -138,3 +151,14 @@ std::vector<ShaderDefine> GraphicsUtils::GetCSMDefines() const
     defines.push_back(ShaderDefine("NUM_CSM_PLANES", std::to_string(csmShadowMaps_.GetNumCSMPlanes())));
     return defines;
 }
+
+std::vector<ShaderDefine> GraphicsUtils::GetLightCullingDefines() const
+{
+    std::vector<ShaderDefine> defines;
+    defines.push_back(ShaderDefine("LIGHTS_PER_TILE", std::to_string(EngineUtils::LIGHTS_PER_TILE)));
+    defines.push_back(ShaderDefine("TILE_SIZE", std::to_string(EngineUtils::TILE_SIZE)));
+    defines.push_back(ShaderDefine("LIGHT_ID_END", std::to_string(EngineUtils::LIGHT_ID_END)));
+    defines.push_back(ShaderDefine("USE_LIGHT_CULLING", ""));
+    return defines;
+}
+

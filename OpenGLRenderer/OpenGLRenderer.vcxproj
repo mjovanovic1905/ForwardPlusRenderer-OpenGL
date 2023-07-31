@@ -22,6 +22,7 @@
     <ClCompile Include="BatchedMeshCreator.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ComputeShader.cpp" />
+    <ClCompile Include="CubedSphere.cpp" />
     <ClCompile Include="Cubemap.cpp" />
     <ClCompile Include="DepthMapPass.cpp" />
     <ClCompile Include="DepthPrepass.cpp" />
@@ -52,6 +53,7 @@
     <ClInclude Include="BatchedMeshCreator.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ComputeShader.h" />
+    <ClInclude Include="CubedSphere.h" />
     <ClInclude Include="Cubemap.h" />
     <ClInclude Include="DepthMapPass.h" />
     <ClInclude Include="DepthPrepass.h" />
@@ -111,6 +113,7 @@
     <None Include="Shaders\light_debug.vert" />
     <None Include="Shaders\outline.frag" />
     <None Include="Shaders\outline.vert" />
+    <None Include="Shaders\shared.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
