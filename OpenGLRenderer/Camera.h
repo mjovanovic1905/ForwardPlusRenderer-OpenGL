@@ -1,5 +1,4 @@
-#ifndef _CAMERA_
-#define _CAMERA_
+#pragma once
 
 #include <glm/glm.hpp>
 #include <climits>
@@ -31,5 +30,3 @@ private:
     glm::vec3 right_;
     float fov_;
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef DEBUG_LIGHT_PASS
-#define DEBUG_LIGHT_PASS
+#pragma once
 
 #include <vector>
 
@@ -30,5 +29,3 @@ private:
     
     void SetupVertices(const PointLight& pointLights, std::vector<DebugLightVertex>& vertices);
 };
-
-#endif

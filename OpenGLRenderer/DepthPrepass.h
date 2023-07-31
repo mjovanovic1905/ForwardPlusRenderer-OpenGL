@@ -1,5 +1,4 @@
-#ifndef DEPTH_PREPASS
-#define DEPTH_PREPASS
+#pragma once
 
 #include "RenderPass.h"
 #include "Framebuffer.h"
@@ -22,5 +21,3 @@ private:
     Texture depthTexture_;
 
 };
-
-#endif

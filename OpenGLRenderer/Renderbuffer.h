@@ -1,5 +1,4 @@
-#ifndef _RENDERBUFFER_
-#define _RENDERBUFFER_
+#pragma once
 
 class Renderbuffer
 {
@@ -15,5 +14,3 @@ public:
 private:
     unsigned int id_;
 };
-
-#endif

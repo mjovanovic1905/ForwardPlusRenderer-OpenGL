@@ -21,7 +21,6 @@
 #include "Texture.h"
 #include "Camera.h"
 #include "MaterialData.h"
-#include "LightProperties.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "Model.h"

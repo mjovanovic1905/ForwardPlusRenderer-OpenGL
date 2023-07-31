@@ -1,5 +1,4 @@
-#ifndef _VAO_
-#define _VAO_
+#pragma once
 
 class VAO
 {
@@ -16,5 +15,3 @@ public:
 private:
     unsigned int id_ = 0;
 };
-
-#endif

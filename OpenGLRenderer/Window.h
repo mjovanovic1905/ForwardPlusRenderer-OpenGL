@@ -1,5 +1,4 @@
-#ifndef _WINDOW_
-#define _WINDOW_
+#pragma once
 
 class GLFWwindow;
 
@@ -31,5 +30,3 @@ private:
     float height_;
 
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _TEXTURE_
-#define _TEXTURE_
+#pragma once
 
 #include <string>
 #include <climits>
@@ -25,5 +24,3 @@ private:
 
     std::string name_;
 };
-
-#endif

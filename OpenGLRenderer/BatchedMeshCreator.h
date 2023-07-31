@@ -1,5 +1,4 @@
-#ifndef _MESH_BATCH_CREATOR_
-#define _MESH_BATCH_CREATOR_
+#pragma once
 
 #include <vector>
 #include <unordered_map>
@@ -34,5 +33,3 @@ private:
 
     std::unordered_map<unsigned int, BatchedMesh> meshes_;
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _DEPTH_MAP_PASS_
-#define _DEPTH_MAP_PASS_
+#pragma once
 
 #include <functional>
 
@@ -27,5 +26,3 @@ private:
     unsigned int shadowResolution_;
     CSMShadowMaps& shadowMaps_;
 };
-
-#endif

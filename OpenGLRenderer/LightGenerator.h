@@ -1,5 +1,4 @@
-#ifndef LIGHT_LOADER
-#define LIGHT_LOADER
+#pragma once
 
 #include <vector>
 #include <string>
@@ -24,5 +23,3 @@ private:
 
     std::vector<PointLight> lights_;
 };
-
-#endif

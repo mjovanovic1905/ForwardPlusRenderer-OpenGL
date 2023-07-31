@@ -1,5 +1,4 @@
-#ifndef _FXAA_
-#define _FXAA_
+#pragma once
 
 #include <memory>
 
@@ -35,5 +34,3 @@ private:
     std::shared_ptr<Texture> sceneTexture_;
     std::shared_ptr<Texture> depthTexture_;
 };
-
-#endif

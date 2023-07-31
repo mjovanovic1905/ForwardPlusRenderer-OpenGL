@@ -1,5 +1,4 @@
-#ifndef _MODEL_
-#define _MODEL_
+#pragma once
 
 #include <vector>
 #include <string>
@@ -37,5 +36,3 @@ class Model
         void processMesh(aiMesh *mesh, const aiScene *scene, std::optional<BatchedMeshCreator>& meshBatchCreator);
         Texture loadMaterialTexture(aiMaterial *mat, aiTextureType type, std::string typeName);
 };
-
-#endif

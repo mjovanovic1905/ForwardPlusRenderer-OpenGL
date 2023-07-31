@@ -1,5 +1,4 @@
-#ifndef _DRAWABLE_OBJECT_
-#define _DRAWABLE_OBJECT_
+#pragma once
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -72,5 +71,3 @@ void DrawableObject::InitBuffers(const std::vector<T>& vertices,
     m_ibo.Init(indices);
     m_ibo.Bind();
 }
-
-#endif

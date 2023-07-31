@@ -1,5 +1,4 @@
 #include "VertexBuffer.h"
-#include "Defines.h"
 #include <cstring>
 
 void VertexBuffer::AddVertexAtributeDescription(unsigned int index, unsigned int numElements,

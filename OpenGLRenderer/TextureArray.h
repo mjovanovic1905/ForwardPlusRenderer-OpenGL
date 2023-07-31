@@ -1,5 +1,4 @@
-#ifndef _TEXTURE_ARRAY_
-#define _TEXTURE_ARRAY_
+#pragma once
 
 class TextureArray
 {
@@ -17,5 +16,3 @@ private:
     unsigned int id_;
     unsigned int textureUnit_;
 };
-
-#endif

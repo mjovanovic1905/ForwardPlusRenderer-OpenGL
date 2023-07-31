@@ -67,7 +67,6 @@
     <ClInclude Include="PointLightBuffer.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="LightGenerator.h" />
-    <ClInclude Include="LightProperties.h" />
     <ClInclude Include="MaterialData.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />

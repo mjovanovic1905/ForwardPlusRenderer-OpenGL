@@ -1,5 +1,4 @@
-#ifndef _MESH_
-#define _MESH_
+#pragma once
 
 #include <vector>
 
@@ -58,5 +57,3 @@ void Mesh::Init(const std::vector<T>& vertices,
     material_ = material;
     VAO::Unbid();
 }
-
-#endif

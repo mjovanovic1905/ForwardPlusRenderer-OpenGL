@@ -7,7 +7,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "MaterialData.h"
-#include "LightProperties.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
 
@@ -152,16 +151,6 @@ void ShaderProgram::SetUniformValue(const char* uniformName, MaterialData& mater
     SetUniformValue((baseName + ".diffuseMap").c_str(), (int)material.diffuseMap.GetTextureUnit());
     SetUniformValue((baseName + ".specularMap").c_str(), (int)material.specularMap.GetTextureUnit());
     SetUniformValue((baseName + ".shine").c_str(), material.shine);
-}
-
-void ShaderProgram::SetUniformValue(const char* uniformName, const LightProperties& light)
-{
-    std::string baseName = uniformName;
-    
-    SetUniformValue((baseName + ".position").c_str(), light.position);
-    SetUniformValue((baseName + ".ambient").c_str(), light.ambient);
-    SetUniformValue((baseName + ".diffuse").c_str(), light.diffuse);
-    SetUniformValue((baseName + ".specular").c_str(), light.specular);
 }
 
 void ShaderProgram::SetUniformValue(const char* uniformName, const DirectionalLight& light)

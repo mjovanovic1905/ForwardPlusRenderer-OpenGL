@@ -1,5 +1,4 @@
-#ifndef _SHADOW_MAPS_
-#define _SHADOW_MAPS_
+#pragma once
 
 #include <vector>
 
@@ -58,5 +57,3 @@ private:
     StorageBuffer<glm::mat4> lightTransformationMatricesGPU_;
     TextureArray depthMapTextures_;
 };
-
-#endif

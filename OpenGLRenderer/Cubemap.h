@@ -1,5 +1,4 @@
-#ifndef _CUBEMAP_
-#define _CUBEMAP_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -41,5 +40,3 @@ void Cubemap::Init(const std::vector<T>& vertices,
     BindCubemapFaces(cubemapFolder);
     SpecifyWrappingAndFiltering(); 
 }
-
-#endif

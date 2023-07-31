@@ -1,5 +1,4 @@
-#ifndef _UNIFORM_BUFFER_
-#define _UNIFORM_BUFFER_
+#pragma once
 
 #include <GL/glew.h>
 
@@ -63,5 +62,3 @@ template<typename T>
 StorageBuffer<T>::~StorageBuffer()
 {
 }
-
-#endif

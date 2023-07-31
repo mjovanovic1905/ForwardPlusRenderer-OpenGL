@@ -1,5 +1,4 @@
-#ifndef _DIR_LIGHT_
-#define _DIR_LIGHT_
+#pragma once
 
 #include <glm/glm.hpp>
 
@@ -11,5 +10,3 @@ struct DirectionalLight
     glm::vec3 diffuse;
     glm::vec3 specular;
 };
-
-#endif

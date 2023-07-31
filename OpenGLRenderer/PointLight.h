@@ -1,5 +1,4 @@
-#ifndef _POINT_LIGHT_
-#define _POINT_LIGHT_
+#pragma once
 
 #include <glm/glm.hpp>
 
@@ -15,5 +14,3 @@ struct PointLight
     float quadratic;  
     float radius;
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _SHADER_PROGRAM_
-#define _SHADER_PROGRAM_
+#pragma once
 
 #include <climits>
 #include <vector>
@@ -46,7 +45,6 @@ public:
     void SetUniformValue(const char* uniformName, float value);
     void SetUniformValue(const char* uniformName, const glm::mat4& matrix);
     void SetUniformValue(const char* uniformName, MaterialData& material);
-    void SetUniformValue(const char* uniformName, const LightProperties& light);
     void SetUniformValue(const char* uniformName, const DirectionalLight& light);
     void SetUniformValue(const char* uniformName, const PointLight& light);
     void SetUniformBuffer(const char* uniformBufferName, int binding);
@@ -60,5 +58,3 @@ protected:
     static constexpr unsigned int INVALID_SHADER_ID = UINT_MAX;
     unsigned int id_;
 };
-
-#endif

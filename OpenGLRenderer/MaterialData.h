@@ -1,5 +1,4 @@
-#ifndef _MATERIAL_DATA_
-#define _MATERIAL_DATA_
+#pragma once
 
 #include <glm/glm.hpp>
 
@@ -11,5 +10,3 @@ struct MaterialData
     Texture specularMap;
     float shine = 32.f;
 };
-
-#endif

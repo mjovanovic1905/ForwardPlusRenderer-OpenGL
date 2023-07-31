@@ -25,6 +25,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{7d23b8b5-53cc-4879-aa55-25c17123d00a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics\Debug">
+      <UniqueIdentifier>{4ae2e3f0-f76d-4fb9-ac74-6c445e8cb2eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framebuffer.cpp">
@@ -90,9 +93,6 @@
     <ClCompile Include="RenderPass.cpp">
       <Filter>RenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="DrawDebugLights.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderProgram.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
@@ -112,7 +112,10 @@
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="CubedSphere.cpp">
-      <Filter>Graphics</Filter>
+      <Filter>Graphics\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawDebugLights.cpp">
+      <Filter>Graphics\Debug</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -188,12 +191,6 @@
     <ClInclude Include="DirectionalLight.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="DrawDebugLights.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="LightProperties.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="PointLight.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -216,7 +213,10 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="CubedSphere.h">
-      <Filter>Graphics</Filter>
+      <Filter>Graphics\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawDebugLights.h">
+      <Filter>Graphics\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

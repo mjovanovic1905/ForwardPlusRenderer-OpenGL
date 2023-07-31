@@ -1,5 +1,4 @@
-#ifndef _OBJECT_DRAW_PASS_
-#define _OBJECT_DRAW_PASS_
+#pragma once
 
 #include <optional>
 #include <memory>
@@ -50,5 +49,3 @@ private:
 
     std::optional<FXAA> fxaa_;
 };
-
-#endif

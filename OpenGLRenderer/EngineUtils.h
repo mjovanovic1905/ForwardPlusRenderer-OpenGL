@@ -1,5 +1,4 @@
-#ifndef _UTILS_
-#define _UTILS_
+#pragma once
 
 #include <string>
 #include <string_view>
@@ -28,5 +27,3 @@ public:
 
 	static std::string ReadFile(std::string_view path);
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _VERTEX_BUFFER_
-#define _VERTEX_BUFFER_
+#pragma once
 
 #include <vector>
 #include <type_traits>
@@ -100,6 +99,3 @@ void VertexBuffer::Init(
 
     numVertices_ = vertices.size();
 }
-
-
-#endif

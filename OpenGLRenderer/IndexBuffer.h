@@ -1,5 +1,4 @@
-#ifndef _INDEX_BUFFER_
-#define _INDEX_BUFFER_
+#pragma once
 
 #include <vector>
 
@@ -18,5 +17,3 @@ private:
     unsigned int id_;
     unsigned long numIndicies_;
 };
-
-#endif

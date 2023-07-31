@@ -1,5 +1,4 @@
-#ifndef _I_RENDER_PASS_
-#define _I_RENDER_PASS_
+#pragma once
 
 #include <functional>
 
@@ -22,5 +21,3 @@ protected:
     ShaderProgram shader_;
     std::function<void(ShaderProgram&)> drawFunc_;
 };
-
-#endif

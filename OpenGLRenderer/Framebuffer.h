@@ -1,5 +1,4 @@
-#ifndef _FRAMEBUFFER_
-#define _FRAMEBUFFER_
+#pragma once
 
 class Framebuffer
 {
@@ -21,5 +20,3 @@ private:
     unsigned int id_;
 
 };
-
-#endif
