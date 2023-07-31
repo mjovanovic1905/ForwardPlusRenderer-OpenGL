@@ -29,12 +29,12 @@
 #include "TextureArray.h"
 #include "StorageBuffer.h"
 #include "CSMShadowMaps.h"
-#include "DepthMapPass.h"
+#include "CSMDepthPrepass.h"
 #include "ObjectDrawPass.h"
 #include "Cubemap.h"
 #include "DrawDebugLights.h"
 #include "LightGenerator.h"
-#include "DepthPrepass.h"
+#include "LightCullingDepthPrepass.h"
 #include "PointLightBuffer.h"
 #include "ComputeShader.h"
 
@@ -90,21 +90,6 @@ void renderDepthMap(Texture& deptMap)
     glBindVertexArray(0);
 }
 
-void printFrameTime()
-{
-    static double lastTime = glfwGetTime();
-    static unsigned int numOfFrames = 0;
-
-    double currentTime = glfwGetTime();
-    numOfFrames++;
-    if (currentTime - lastTime > 1.f)
-    {
-        printf("%f ms/frame\n", 1000.0/double(numOfFrames));
-        numOfFrames = 0;
-        lastTime += 1.0;
-    }   
-}
-
 int main()
 {
     if (!EngineUtils::InitGLFW())
@@ -136,9 +121,9 @@ int main()
     DrawDebugLights debugLights(graphicsUtils.lightGenerator_.GetLights());
 
     ObjectDrawPass drawPass = graphicsUtils.SetupMainPass();
-    DepthMapPass depthMapPass = graphicsUtils.SetupCSMDepthMapPass();
-    DepthPrepass depthPrepass = graphicsUtils.SetupDepthPrepass();
-    ComputeShader computeShader = graphicsUtils.SetupLightCulling(depthPrepass);
+    CSMDepthPrepass csmDepthPrepass = graphicsUtils.SetupCSMDepthPrepass();
+    LightCullingDepthPrepass depthPrepass = graphicsUtils.SetupLightCullingDepthPrepass();
+    ComputeShader computeShader = graphicsUtils.SetupLightCullingComputeShader(depthPrepass);
 
     while(!mainWindow.WindowShouldClose())
     {
@@ -148,14 +133,8 @@ int main()
         camera.ProcessInput(currentFrame - lastFrame);
         lastFrame = currentFrame;
 
-        depthMapPass.Draw();
-        //drawPass.Draw();
-
-        //debugLights.SetView(camera.GetViewMatrix());
-        //debugLights.SetProj(camera.GetProjectionMatrix());
-     
-
-        //depthPrepass.
+        csmDepthPrepass.Draw();
+        
         if constexpr (EngineUtils::USE_LIGHT_CULLING)
         {
             graphicsUtils.GetPointLightBuffer().Bind();
@@ -178,15 +157,6 @@ int main()
         debugLights.SetProj(camera.GetProjectionMatrix());
         debugLights.Draw(debugLightsShader);
 
-        // const auto proj = glm::perspective(
-        // glm::radians(camera.getFOV()), (float)WINDOW_WIDTH / WINDOW_HEIGHT, Camera::NEAR_PLANE,
-        // Camera::FAR_PLANE);
-        // const auto inv = glm::inverse(proj * camera.getViewMatrix());
-        // auto pt = inv * glm::vec4(camera.getPosition(), 1.0f);
-        // pt /= pt.w;
-        
-        // printf("%f %f %f \n", pt[0], pt[1], pt[2]);
-
         mainWindow.SwapBuffers();
         glfwPollEvents();
 
@@ -196,7 +166,7 @@ int main()
         //     assert(error == GL_NO_ERROR);
         // }
 
-        printFrameTime();
+        EngineUtils::PrintFrameTime();
     }  
 
     glfwTerminate();

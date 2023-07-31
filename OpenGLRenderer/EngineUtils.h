@@ -26,4 +26,5 @@ public:
 	static void SetupOpenGl();
 
 	static std::string ReadFile(std::string_view path);
+	static void PrintFrameTime();
 };

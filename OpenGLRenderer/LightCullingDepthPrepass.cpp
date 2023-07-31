@@ -1,4 +1,4 @@
-#include "DepthPrepass.h"
+#include "LightCullingDepthPrepass.h"
 
 #include <GL/glew.h>
 
@@ -6,7 +6,7 @@
 #include "Camera.h"
 #include "Window.h"
 
-DepthPrepass::DepthPrepass(const std::function<void(ShaderProgram&)>& Draw, const ShaderProgram& shader)
+LightCullingDepthPrepass::LightCullingDepthPrepass(const std::function<void(ShaderProgram&)>& Draw, const ShaderProgram& shader)
 : RenderPass(Draw, shader)
 {
     const Window& window = Window::Get();
@@ -19,7 +19,7 @@ DepthPrepass::DepthPrepass(const std::function<void(ShaderProgram&)>& Draw, cons
     assert(framebuffer_.IsComplete());
 }
 
-void DepthPrepass::PreDraw()
+void LightCullingDepthPrepass::PreDraw()
 {
     const Window& window = Window::Get();   
     framebuffer_.Bind();
@@ -30,12 +30,12 @@ void DepthPrepass::PreDraw()
     shader_.UseProgram();
 }
 
-void DepthPrepass::PostDraw()
+void LightCullingDepthPrepass::PostDraw()
 {
     Framebuffer::BindDefault();
 }
 
-DepthPrepass::~DepthPrepass()
+LightCullingDepthPrepass::~LightCullingDepthPrepass()
 {
 }
 

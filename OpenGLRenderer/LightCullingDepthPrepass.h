@@ -4,11 +4,11 @@
 #include "Framebuffer.h"
 #include "Texture.h"
 
-class DepthPrepass : public RenderPass
+class LightCullingDepthPrepass : public RenderPass
 {
 public:
-    DepthPrepass(const std::function<void(ShaderProgram&)>& Draw, const ShaderProgram& shader);
-    virtual ~DepthPrepass() override;
+    LightCullingDepthPrepass(const std::function<void(ShaderProgram&)>& Draw, const ShaderProgram& shader);
+    virtual ~LightCullingDepthPrepass() override;
 
     Texture& GetDepthMap() { return depthTexture_; }
 

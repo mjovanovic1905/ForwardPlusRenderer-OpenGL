@@ -85,7 +85,7 @@ ObjectDrawPass GraphicsUtils::SetupMainPass()
 	return drawPass;
 }
 
-DepthMapPass GraphicsUtils::SetupCSMDepthMapPass()
+CSMDepthPrepass GraphicsUtils::SetupCSMDepthPrepass()
 {
     ShaderData depthMapVertexShader;
     depthMapVertexShader.sourceCode = EngineUtils::ReadFile("./Shaders/layeredDepthMap.vert");
@@ -104,10 +104,10 @@ DepthMapPass GraphicsUtils::SetupCSMDepthMapPass()
         assert(false);
     }
 
-    return DepthMapPass(drawFunc_, depthMapShader, csmShadowMaps_, EngineUtils::CSM_SHADOW_RES);
+    return CSMDepthPrepass(drawFunc_, depthMapShader, csmShadowMaps_, EngineUtils::CSM_SHADOW_RES);
 }
 
-DepthPrepass GraphicsUtils::SetupDepthPrepass()
+LightCullingDepthPrepass GraphicsUtils::SetupLightCullingDepthPrepass()
 {
     ShaderData depthPrepassVertexShader;
     depthPrepassVertexShader.sourceCode = EngineUtils::ReadFile("./Shaders/depthMap.vert");
@@ -118,10 +118,10 @@ DepthPrepass GraphicsUtils::SetupDepthPrepass()
     ShaderProgram depthPrepassShader;
     depthPrepassShader.Init(&depthPrepassVertexShader, &depthPrepassFragmentShader);
     
-    return DepthPrepass(drawFunc_, depthPrepassShader);
+    return LightCullingDepthPrepass(drawFunc_, depthPrepassShader);
 }
 
-ComputeShader GraphicsUtils::SetupLightCulling(DepthPrepass& depthPrepass)
+ComputeShader GraphicsUtils::SetupLightCullingComputeShader(LightCullingDepthPrepass& depthPrepass)
 {
 
     ShaderData computeShaderData;

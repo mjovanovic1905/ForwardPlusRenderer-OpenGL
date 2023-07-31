@@ -4,10 +4,10 @@
 
 #include "ObjectDrawPass.h"
 #include "Camera.h"
-#include "DepthMapPass.h"
+#include "CSMDepthPrepass.h"
 #include "DirectionalLight.h"
 #include "CSMShadowMaps.h"
-#include "DepthPrepass.h"
+#include "LightCullingDepthPrepass.h"
 #include "PointLightBuffer.h"
 #include "ComputeShader.h"
 #include "Model.h"
@@ -18,9 +18,9 @@ class GraphicsUtils
 public:
 	GraphicsUtils(Camera& camera);
 	ObjectDrawPass SetupMainPass();
-	DepthMapPass SetupCSMDepthMapPass();
-	DepthPrepass SetupDepthPrepass();
-	ComputeShader SetupLightCulling(DepthPrepass& depthPrepass);
+	CSMDepthPrepass SetupCSMDepthPrepass();
+	LightCullingDepthPrepass SetupLightCullingDepthPrepass();
+	ComputeShader SetupLightCullingComputeShader(LightCullingDepthPrepass& depthPrepass);
 	PointLightBuffer& GetPointLightBuffer() { return pointLightBuffer_; }
 
 	LightGenerator lightGenerator_;

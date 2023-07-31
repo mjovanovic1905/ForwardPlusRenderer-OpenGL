@@ -1,11 +1,11 @@
-#include "DepthMapPass.h"
+#include "CSMDepthPrepass.h"
 
 #include <GL/glew.h>
 
 #include "CSMShadowMaps.h"
 #include "Window.h"
 
-DepthMapPass::DepthMapPass(
+CSMDepthPrepass::CSMDepthPrepass(
     const std::function<void(ShaderProgram&)>& Draw,
     const ShaderProgram& shader,
     CSMShadowMaps& shadowMaps,
@@ -21,7 +21,7 @@ DepthMapPass::DepthMapPass(
 }
 
 
-void DepthMapPass::PreDraw()
+void CSMDepthPrepass::PreDraw()
 {
     framebuffer_.Bind();
     glViewport(0, 0, shadowResolution_, shadowResolution_);
@@ -35,7 +35,7 @@ void DepthMapPass::PreDraw()
     shader_.SetUniformBuffer("LightSpaceMatrices", 0);
 }
 
-void DepthMapPass::PostDraw()
+void CSMDepthPrepass::PostDraw()
 {
     const Window& window = Window::Get();
     glViewport(0, 0, window.GetWidth(), window.GetHeight());
@@ -43,7 +43,7 @@ void DepthMapPass::PostDraw()
     Framebuffer::BindDefault();
 }
 
-DepthMapPass::~DepthMapPass()
+CSMDepthPrepass::~CSMDepthPrepass()
 {
 }
 

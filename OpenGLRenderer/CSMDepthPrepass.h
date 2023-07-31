@@ -7,16 +7,16 @@
 
 class CSMShadowMaps;
 
-class DepthMapPass : public RenderPass
+class CSMDepthPrepass : public RenderPass
 {
 public:
-    DepthMapPass(
+    CSMDepthPrepass(
         const std::function<void(ShaderProgram&)>& Draw,
         const ShaderProgram& shader,
         CSMShadowMaps& shadowMaps,
         unsigned int resolution);
 
-    virtual ~DepthMapPass() override;
+    virtual ~CSMDepthPrepass() override;
 
     virtual void PreDraw() override;
     virtual void PostDraw() override;

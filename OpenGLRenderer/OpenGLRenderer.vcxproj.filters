@@ -66,10 +66,10 @@
     <ClCompile Include="TextureArray.cpp">
       <Filter>ModelLoader</Filter>
     </ClCompile>
-    <ClCompile Include="DepthMapPass.cpp">
+    <ClCompile Include="CSMDepthPrepass.cpp">
       <Filter>RenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="DepthPrepass.cpp">
+    <ClCompile Include="LightCullingDepthPrepass.cpp">
       <Filter>RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="ObjectDrawPass.cpp">
@@ -161,10 +161,10 @@
     <ClInclude Include="StorageBuffer.h">
       <Filter>Buffers</Filter>
     </ClInclude>
-    <ClInclude Include="DepthMapPass.h">
+    <ClInclude Include="CSMDepthPrepass.h">
       <Filter>RenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="DepthPrepass.h">
+    <ClInclude Include="LightCullingDepthPrepass.h">
       <Filter>RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="ObjectDrawPass.h">

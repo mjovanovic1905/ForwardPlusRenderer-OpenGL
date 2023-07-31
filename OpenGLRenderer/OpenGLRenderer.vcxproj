@@ -24,8 +24,8 @@
     <ClCompile Include="ComputeShader.cpp" />
     <ClCompile Include="CubedSphere.cpp" />
     <ClCompile Include="Cubemap.cpp" />
-    <ClCompile Include="DepthMapPass.cpp" />
-    <ClCompile Include="DepthPrepass.cpp" />
+    <ClCompile Include="CSMDepthPrepass.cpp" />
+    <ClCompile Include="LightCullingDepthPrepass.cpp" />
     <ClCompile Include="DrawableObject.cpp" />
     <ClCompile Include="DrawDebugLights.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
@@ -55,8 +55,8 @@
     <ClInclude Include="ComputeShader.h" />
     <ClInclude Include="CubedSphere.h" />
     <ClInclude Include="Cubemap.h" />
-    <ClInclude Include="DepthMapPass.h" />
-    <ClInclude Include="DepthPrepass.h" />
+    <ClInclude Include="CSMDepthPrepass.h" />
+    <ClInclude Include="LightCullingDepthPrepass.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="DrawableObject.h" />
     <ClInclude Include="DrawDebugLights.h" />

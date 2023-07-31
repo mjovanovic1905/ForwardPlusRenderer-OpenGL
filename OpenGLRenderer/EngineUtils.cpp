@@ -43,3 +43,18 @@ std::string EngineUtils::ReadFile(std::string_view path) {
     out.append(buf, 0, stream.gcount());
     return out;
 }
+
+void EngineUtils::PrintFrameTime()
+{
+    static double lastTime = glfwGetTime();
+    static unsigned int numOfFrames = 0;
+
+    double currentTime = glfwGetTime();
+    numOfFrames++;
+    if (currentTime - lastTime > 1.f)
+    {
+        printf("%f ms/frame\n", 1000.0 / double(numOfFrames));
+        numOfFrames = 0;
+        lastTime += 1.0;
+    }
+}
