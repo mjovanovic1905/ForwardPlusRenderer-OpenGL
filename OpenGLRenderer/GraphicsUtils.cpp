@@ -38,9 +38,9 @@ GraphicsUtils::GraphicsUtils(Camera& camera)
 ObjectDrawPass GraphicsUtils::SetupMainPass()
 {
     ShaderData vertexShaderData;
-    vertexShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/blinn-phong.vert");
+    vertexShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/objectDraw.vert");
     ShaderData fragmentShaderData;
-    fragmentShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/blinn-phong-fp.frag");
+    fragmentShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/objectDraw.frag");
     fragmentShaderData.defines = GetCSMDefines();
     fragmentShaderData.includes = EngineUtils::ReadFile("./Shaders/shared.glsl");
     

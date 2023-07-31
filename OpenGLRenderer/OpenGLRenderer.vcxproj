@@ -85,33 +85,20 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\basic.frag" />
-    <None Include="Shaders\basic.vert" />
-    <None Include="Shaders\blinn-phong-fp.frag" />
-    <None Include="Shaders\blinn-phong.frag" />
-    <None Include="Shaders\blinn-phong.vert" />
-    <None Include="Shaders\cubemap_test.frag" />
-    <None Include="Shaders\cubemap_test.vert" />
+    <None Include="Shaders\objectDraw.frag" />
+    <None Include="Shaders\objectDraw.vert" />
     <None Include="Shaders\depthDBG.frag" />
     <None Include="Shaders\depthDBG.vert" />
     <None Include="Shaders\depthMap.frag" />
     <None Include="Shaders\depthMap.vert" />
-    <None Include="Shaders\framebufferToScreen.frag" />
-    <None Include="Shaders\framebufferToScreen.vert" />
     <None Include="Shaders\FXAA.frag" />
     <None Include="Shaders\FXAA.vert" />
     <None Include="Shaders\layeredDepthMap.frag" />
     <None Include="Shaders\layeredDepthMap.geom" />
     <None Include="Shaders\layeredDepthMap.vert" />
-    <None Include="Shaders\light.frag" />
-    <None Include="Shaders\light.vert" />
     <None Include="Shaders\lightCulling.comp" />
-    <None Include="Shaders\lightSource.frag" />
-    <None Include="Shaders\lightSource.vert" />
-    <None Include="Shaders\light_debug.frag" />
-    <None Include="Shaders\light_debug.vert" />
-    <None Include="Shaders\outline.frag" />
-    <None Include="Shaders\outline.vert" />
+    <None Include="Shaders\lightDebug.frag" />
+    <None Include="Shaders\lightDebug.vert" />
     <None Include="Shaders\shared.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

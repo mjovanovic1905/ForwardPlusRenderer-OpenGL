@@ -123,10 +123,10 @@ int main()
 
     
     ShaderData debugLightsVertexShaderData;
-    debugLightsVertexShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/light_debug.vert");
+    debugLightsVertexShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/lightDebug.vert");
 
     ShaderData debugLightsfragmentShaderData;
-    debugLightsfragmentShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/light_debug.frag");
+    debugLightsfragmentShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/lightDebug.frag");
     
     ShaderProgram debugLightsShader;
     debugLightsShader.Init(&debugLightsVertexShaderData, &debugLightsfragmentShaderData);

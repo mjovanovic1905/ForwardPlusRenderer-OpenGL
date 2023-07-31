@@ -220,24 +220,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\basic.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\basic.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\blinn-phong.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\blinn-phong.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\cubemap_test.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\cubemap_test.vert">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="Shaders\depthDBG.frag">
       <Filter>Shaders</Filter>
     </None>
@@ -248,12 +230,6 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\depthMap.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\framebufferToScreen.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\framebufferToScreen.vert">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\FXAA.frag">
@@ -271,37 +247,22 @@
     <None Include="Shaders\layeredDepthMap.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\light.frag">
+    <None Include="Shaders\lightDebug.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\light.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\light_debug.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\light_debug.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\lightSource.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\lightSource.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\outline.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\outline.vert">
+    <None Include="Shaders\lightDebug.vert">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\lightCulling.comp">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\blinn-phong-fp.frag">
+    <None Include="Shaders\objectDraw.frag">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\shared.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\objectDraw.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
