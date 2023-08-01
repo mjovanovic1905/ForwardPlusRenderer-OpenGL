@@ -145,6 +145,11 @@ ComputeShader GraphicsUtils::SetupLightCullingComputeShader(LightCullingDepthPre
     return computeShader;
 }
 
+DebugLightsPass GraphicsUtils::SetupDrawDebugLights()
+{
+    return DebugLightsPass(lightGenerator_.GetLights(), camera_);
+}
+
 std::vector<ShaderDefine> GraphicsUtils::GetCSMDefines() const
 {
     std::vector<ShaderDefine> defines;

@@ -117,6 +117,8 @@
     <ClCompile Include="DrawDebugLights.cpp">
       <Filter>Graphics\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="DrawLightCullingDepthMap.cpp" />
+    <ClCompile Include="DebugLightsPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IndexBuffer.h">
@@ -218,6 +220,8 @@
     <ClInclude Include="DrawDebugLights.h">
       <Filter>Graphics\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="DrawLightCullingDepthMap.h" />
+    <ClInclude Include="DebugLightsPass.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\depthDBG.frag">

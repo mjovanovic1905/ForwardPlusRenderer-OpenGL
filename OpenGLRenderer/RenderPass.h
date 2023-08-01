@@ -7,7 +7,8 @@
 class RenderPass
 {
 public:
-    RenderPass(const std::function<void(ShaderProgram&)>& Draw, const ShaderProgram& shader);
+    RenderPass();
+    RenderPass(const std::function<void(ShaderProgram&)>& Draw, ShaderProgram shader);
 
     void Draw();
 

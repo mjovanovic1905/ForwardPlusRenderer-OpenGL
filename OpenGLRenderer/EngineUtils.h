@@ -20,6 +20,7 @@ public:
 	static constexpr int LIGHT_ID_END = -2;
 	
 	static constexpr bool USE_LIGHT_CULLING = true;
+	static constexpr bool DRAW_DEBUG_LIGHTS = true;
 
 	static bool InitGLFW();
 	static void ReleaseGLFW();

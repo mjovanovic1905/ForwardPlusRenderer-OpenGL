@@ -6,7 +6,7 @@
 #include "Camera.h"
 #include "Window.h"
 
-LightCullingDepthPrepass::LightCullingDepthPrepass(const std::function<void(ShaderProgram&)>& Draw, const ShaderProgram& shader)
+LightCullingDepthPrepass::LightCullingDepthPrepass(const std::function<void(ShaderProgram&)>& Draw, ShaderProgram shader)
 : RenderPass(Draw, shader)
 {
     const Window& window = Window::Get();

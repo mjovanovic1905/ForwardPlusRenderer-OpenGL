@@ -23,10 +23,10 @@ DrawDebugLights::~DrawDebugLights()
 void DrawDebugLights::Draw(ShaderProgram& shader)
 {
     shader.UseProgram();
-    m_vao.Bind();
+    vao_.Bind();
     SetupMatrices(shader);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDrawArrays(GL_TRIANGLES, 0, m_vbo.GetNumVertices());
+    glDrawArrays(GL_TRIANGLES, 0, vbo_.GetNumVertices());
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 

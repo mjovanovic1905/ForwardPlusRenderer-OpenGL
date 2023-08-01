@@ -36,9 +36,9 @@ protected:
 
     void SetupMatrices(ShaderProgram& shader);
 
-    VAO m_vao;
-    VertexBuffer m_vbo;
-    IndexBuffer m_ibo;
+    VAO vao_;
+    VertexBuffer vbo_;
+    IndexBuffer ibo_;
 
 private:
     void CalculateMVP();
@@ -55,11 +55,11 @@ template<typename T>
 void DrawableObject::InitBuffers(const std::vector<T>& vertices,
         const std::vector<VertexAttributeDescription>& attribDescriptions)
 {
-    m_vao.Init();
-    m_vao.Bind();
+    vao_.Init();
+    vao_.Bind();
 
-    m_vbo.Init(vertices, attribDescriptions);
-    m_vbo.Bind(); 
+    vbo_.Init(vertices, attribDescriptions);
+    vbo_.Bind(); 
 }
 
 template<typename T>
@@ -68,6 +68,6 @@ void DrawableObject::InitBuffers(const std::vector<T>& vertices,
         const std::vector<unsigned int>& indices)
 {
     InitBuffers(vertices, attribDescriptions);
-    m_ibo.Init(indices);
-    m_ibo.Bind();
+    ibo_.Init(indices);
+    ibo_.Bind();
 }

@@ -12,6 +12,7 @@
 #include "ComputeShader.h"
 #include "Model.h"
 #include "LightGenerator.h"
+#include "DebugLightsPass.h"
 
 class GraphicsUtils
 {
@@ -21,9 +22,10 @@ public:
 	CSMDepthPrepass SetupCSMDepthPrepass();
 	LightCullingDepthPrepass SetupLightCullingDepthPrepass();
 	ComputeShader SetupLightCullingComputeShader(LightCullingDepthPrepass& depthPrepass);
-	PointLightBuffer& GetPointLightBuffer() { return pointLightBuffer_; }
+	DebugLightsPass SetupDrawDebugLights();
 
-	LightGenerator lightGenerator_;
+	PointLightBuffer& GetPointLightBuffer() { return pointLightBuffer_; }	
+
 private:
 
 	std::vector<ShaderDefine> GetCSMDefines() const;
@@ -35,6 +37,7 @@ private:
 	CSMShadowMaps csmShadowMaps_;
 	std::function<void(ShaderProgram&)> drawFunc_;
 	Model sponzaModel_;
+	LightGenerator lightGenerator_;
 	int workGroupsX_;
 	int workGroupsY_;
 };

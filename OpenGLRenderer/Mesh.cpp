@@ -21,15 +21,15 @@ void Mesh::Draw(ShaderProgram& shader)
     }
     
     // Draw mesh
-    m_vao.Bind();
+    vao_.Bind();
     
-    if (m_ibo.GetNumIndicies() > 0)
+    if (ibo_.GetNumIndicies() > 0)
     {
-        glDrawElements(GL_TRIANGLES, m_ibo.GetNumIndicies(), GL_UNSIGNED_INT, 0); 
+        glDrawElements(GL_TRIANGLES, ibo_.GetNumIndicies(), GL_UNSIGNED_INT, 0); 
     }
     else
     {
-        glDrawArrays(GL_TRIANGLES, 0, m_vbo.GetNumVertices());
+        glDrawArrays(GL_TRIANGLES, 0, vbo_.GetNumVertices());
     }
     VAO::Unbid();
     

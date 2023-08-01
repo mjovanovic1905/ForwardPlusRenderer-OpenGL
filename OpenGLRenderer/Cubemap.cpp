@@ -25,7 +25,7 @@ void Cubemap::Draw(ShaderProgram& shader)
 
     Bind();
     shader.SetUniformValue("skybox", 0);
-    m_vao.Bind();
+    vao_.Bind();
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glDepthFunc(GL_LESS);

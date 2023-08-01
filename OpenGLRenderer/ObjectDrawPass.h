@@ -18,8 +18,7 @@ class ObjectDrawPass : public RenderPass
 {
 public:
     ObjectDrawPass(
-        const std::function<void(ShaderProgram&)>& Draw,
-        const ShaderProgram& shader,
+        const std::function<void(ShaderProgram&)>& Draw, ShaderProgram shader,
         const Camera& camera,
         const DirectionalLight& light,
         const std::vector<PointLight>& pointLights

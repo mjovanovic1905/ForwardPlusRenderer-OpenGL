@@ -32,7 +32,7 @@
 #include "CSMDepthPrepass.h"
 #include "ObjectDrawPass.h"
 #include "Cubemap.h"
-#include "DrawDebugLights.h"
+#include "DebugLightsPass.h"
 #include "LightGenerator.h"
 #include "LightCullingDepthPrepass.h"
 #include "PointLightBuffer.h"
@@ -107,23 +107,15 @@ int main()
     float lastFrame = 0.0f;
 
     
-    ShaderData debugLightsVertexShaderData;
-    debugLightsVertexShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/lightDebug.vert");
 
-    ShaderData debugLightsfragmentShaderData;
-    debugLightsfragmentShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/lightDebug.frag");
-    
-    ShaderProgram debugLightsShader;
-    debugLightsShader.Init(&debugLightsVertexShaderData, &debugLightsfragmentShaderData);
 
     GraphicsUtils graphicsUtils(camera);
-
-    DrawDebugLights debugLights(graphicsUtils.lightGenerator_.GetLights());
 
     ObjectDrawPass drawPass = graphicsUtils.SetupMainPass();
     CSMDepthPrepass csmDepthPrepass = graphicsUtils.SetupCSMDepthPrepass();
     LightCullingDepthPrepass depthPrepass = graphicsUtils.SetupLightCullingDepthPrepass();
     ComputeShader computeShader = graphicsUtils.SetupLightCullingComputeShader(depthPrepass);
+    DebugLightsPass debugLights = graphicsUtils.SetupDrawDebugLights();
 
     while(!mainWindow.WindowShouldClose())
     {
@@ -152,10 +144,10 @@ int main()
         
         drawPass.Draw();
 
-        debugLights.SetModel(glm::mat4(1.f));
-        debugLights.SetView(camera.GetViewMatrix());
-        debugLights.SetProj(camera.GetProjectionMatrix());
-        debugLights.Draw(debugLightsShader);
+        if constexpr (EngineUtils::DRAW_DEBUG_LIGHTS)
+        {
+            debugLights.Draw();
+        }
 
         mainWindow.SwapBuffers();
         glfwPollEvents();

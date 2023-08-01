@@ -7,7 +7,7 @@
 class LightCullingDepthPrepass : public RenderPass
 {
 public:
-    LightCullingDepthPrepass(const std::function<void(ShaderProgram&)>& Draw, const ShaderProgram& shader);
+    LightCullingDepthPrepass(const std::function<void(ShaderProgram&)>& Draw, ShaderProgram shader);
     virtual ~LightCullingDepthPrepass() override;
 
     Texture& GetDepthMap() { return depthTexture_; }
