@@ -1,11 +1,11 @@
-#include "GraphicsUtils.h"
+#include "GraphicsEngineSetupUtil.h"
 
 #include <assert.h>
 
 #include "EngineUtils.h"
 #include "Window.h"
 
-GraphicsUtils::GraphicsUtils(Camera& camera)
+GraphicsEngineSetupUtil::GraphicsEngineSetupUtil(Camera& camera)
     : camera_(camera)
 {
     light_.direction = glm::normalize(glm::vec3(20.0f, 50, 20.0f));
@@ -35,7 +35,7 @@ GraphicsUtils::GraphicsUtils(Camera& camera)
     pointLightBuffer_.Init(lightGenerator_.GetLights(), workGroupsX_ * workGroupsY_, EngineUtils::LIGHTS_PER_TILE);
 }
 
-ObjectDrawPass GraphicsUtils::SetupMainPass()
+ObjectDrawPass GraphicsEngineSetupUtil::SetupMainPass()
 {
     ShaderData vertexShaderData;
     vertexShaderData.sourceCode = EngineUtils::ReadFile("./Shaders/objectDraw.vert");
@@ -85,7 +85,7 @@ ObjectDrawPass GraphicsUtils::SetupMainPass()
 	return drawPass;
 }
 
-CSMDepthPrepass GraphicsUtils::SetupCSMDepthPrepass()
+CSMDepthPrepass GraphicsEngineSetupUtil::SetupCSMDepthPrepass()
 {
     ShaderData depthMapVertexShader;
     depthMapVertexShader.sourceCode = EngineUtils::ReadFile("./Shaders/layeredDepthMap.vert");
@@ -107,7 +107,7 @@ CSMDepthPrepass GraphicsUtils::SetupCSMDepthPrepass()
     return CSMDepthPrepass(drawFunc_, depthMapShader, csmShadowMaps_, EngineUtils::CSM_SHADOW_RES);
 }
 
-LightCullingDepthPrepass GraphicsUtils::SetupLightCullingDepthPrepass()
+LightCullingDepthPrepass GraphicsEngineSetupUtil::SetupLightCullingDepthPrepass()
 {
     ShaderData depthPrepassVertexShader;
     depthPrepassVertexShader.sourceCode = EngineUtils::ReadFile("./Shaders/depthMap.vert");
@@ -121,7 +121,7 @@ LightCullingDepthPrepass GraphicsUtils::SetupLightCullingDepthPrepass()
     return LightCullingDepthPrepass(drawFunc_, depthPrepassShader);
 }
 
-ComputeShader GraphicsUtils::SetupLightCullingComputeShader(LightCullingDepthPrepass& depthPrepass)
+ComputeShader GraphicsEngineSetupUtil::SetupLightCullingComputeShader(LightCullingDepthPrepass& depthPrepass)
 {
 
     ShaderData computeShaderData;
@@ -145,19 +145,24 @@ ComputeShader GraphicsUtils::SetupLightCullingComputeShader(LightCullingDepthPre
     return computeShader;
 }
 
-DebugLightsPass GraphicsUtils::SetupDrawDebugLights()
+DebugLightsPass GraphicsEngineSetupUtil::SetupDrawDebugLights()
 {
     return DebugLightsPass(lightGenerator_.GetLights(), camera_);
 }
 
-std::vector<ShaderDefine> GraphicsUtils::GetCSMDefines() const
+LightCullingDepthMapDrawPass GraphicsEngineSetupUtil::SetupLightCullingDepthMapDrawPass(LightCullingDepthPrepass& depthPrepass)
+{
+    return LightCullingDepthMapDrawPass(depthPrepass.GetDepthMap());
+}
+
+std::vector<ShaderDefine> GraphicsEngineSetupUtil::GetCSMDefines() const
 {
     std::vector<ShaderDefine> defines;
     defines.push_back(ShaderDefine("NUM_CSM_PLANES", std::to_string(csmShadowMaps_.GetNumCSMPlanes())));
     return defines;
 }
 
-std::vector<ShaderDefine> GraphicsUtils::GetLightCullingDefines() const
+std::vector<ShaderDefine> GraphicsEngineSetupUtil::GetLightCullingDefines() const
 {
     std::vector<ShaderDefine> defines;
     defines.push_back(ShaderDefine("LIGHTS_PER_TILE", std::to_string(EngineUtils::LIGHTS_PER_TILE)));

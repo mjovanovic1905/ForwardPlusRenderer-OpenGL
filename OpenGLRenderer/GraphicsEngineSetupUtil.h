@@ -13,16 +13,18 @@
 #include "Model.h"
 #include "LightGenerator.h"
 #include "DebugLightsPass.h"
+#include "LightCullingDepthMapDrawPass.h"
 
-class GraphicsUtils
+class GraphicsEngineSetupUtil
 {
 public:
-	GraphicsUtils(Camera& camera);
+	GraphicsEngineSetupUtil(Camera& camera);
 	ObjectDrawPass SetupMainPass();
 	CSMDepthPrepass SetupCSMDepthPrepass();
 	LightCullingDepthPrepass SetupLightCullingDepthPrepass();
 	ComputeShader SetupLightCullingComputeShader(LightCullingDepthPrepass& depthPrepass);
 	DebugLightsPass SetupDrawDebugLights();
+	LightCullingDepthMapDrawPass SetupLightCullingDepthMapDrawPass(LightCullingDepthPrepass& depthPrepass);
 
 	PointLightBuffer& GetPointLightBuffer() { return pointLightBuffer_; }	
 

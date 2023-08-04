@@ -21,6 +21,7 @@ public:
 	
 	static constexpr bool USE_LIGHT_CULLING = true;
 	static constexpr bool DRAW_DEBUG_LIGHTS = true;
+	static constexpr bool DRAW_LIGHT_CULLING_DEPTH_MAP = false;
 
 	static bool InitGLFW();
 	static void ReleaseGLFW();

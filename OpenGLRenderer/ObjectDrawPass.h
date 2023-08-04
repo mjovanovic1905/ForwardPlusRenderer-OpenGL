@@ -17,6 +17,8 @@ class Window;
 class ObjectDrawPass : public RenderPass
 {
 public:
+    ObjectDrawPass() = default;
+
     ObjectDrawPass(
         const std::function<void(ShaderProgram&)>& Draw, ShaderProgram shader,
         const Camera& camera,

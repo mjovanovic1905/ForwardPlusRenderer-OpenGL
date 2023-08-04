@@ -65,6 +65,11 @@ Camera::Camera()
 {
 }
 
+Camera::Camera(glm::vec3 position)
+{
+    Init(position);
+}
+
 void Camera::Init(glm::vec3 position)
 {
     position_ = position;

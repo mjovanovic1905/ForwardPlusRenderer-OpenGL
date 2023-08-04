@@ -1,6 +1,8 @@
 #include "DrawLightCullingDepthMap.h"
 
 #include "EngineUtils.h"
+#include "Window.h"
+#include "Texture.h"
 
 DrawLightCullingDepthMap::DrawLightCullingDepthMap(Texture& deptMap)
     : deptMap_(deptMap)
@@ -24,17 +26,17 @@ DrawLightCullingDepthMap::DrawLightCullingDepthMap(Texture& deptMap)
     attribDescriptions.push_back(VertexAttributeDescription(2, false, VertexAttributeType::TEX_COORDS));
     vbo_.Init(quadVertices, attribDescriptions);
     vbo_.Bind();
-
-    ShaderData vertexShader;
-    vertexShader.sourceCode = EngineUtils::ReadFile("./Shaders/depthDBG.vert");
-    ShaderData fragmentShader;
-    fragmentShader.sourceCode = EngineUtils::ReadFile("./Shaders/depthDBG.frag");
-
-    shaderProgram_.Init(&vertexShader, &fragmentShader);
-    shaderProgram_.UseProgram();
 }
 
 void DrawLightCullingDepthMap::Draw(ShaderProgram& shader)
 {
-
+    const Window& window = Window::Get();
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, window.GetWidth(), window.GetHeight());
+    shader.UseProgram();
+    deptMap_.BindTexture();
+    vao_.Bind();
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
 }

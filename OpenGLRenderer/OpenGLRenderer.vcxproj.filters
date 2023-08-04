@@ -108,7 +108,7 @@
     <ClCompile Include="ComputeShader.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsUtils.cpp">
+    <ClCompile Include="GraphicsEngineSetupUtil.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="CubedSphere.cpp">
@@ -117,8 +117,16 @@
     <ClCompile Include="DrawDebugLights.cpp">
       <Filter>Graphics\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="DrawLightCullingDepthMap.cpp" />
-    <ClCompile Include="DebugLightsPass.cpp" />
+    <ClCompile Include="GraphicsEngine.cpp" />
+    <ClCompile Include="DebugLightsPass.cpp">
+      <Filter>Graphics\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawLightCullingDepthMap.cpp">
+      <Filter>Graphics\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="LightCullingDepthMapDrawPass.cpp">
+      <Filter>Graphics\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IndexBuffer.h">
@@ -211,7 +219,7 @@
     <ClInclude Include="ComputeShader.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsUtils.h">
+    <ClInclude Include="GraphicsEngineSetupUtil.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="CubedSphere.h">
@@ -220,8 +228,16 @@
     <ClInclude Include="DrawDebugLights.h">
       <Filter>Graphics\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="DrawLightCullingDepthMap.h" />
-    <ClInclude Include="DebugLightsPass.h" />
+    <ClInclude Include="GraphicsEngine.h" />
+    <ClInclude Include="DebugLightsPass.h">
+      <Filter>Graphics\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawLightCullingDepthMap.h">
+      <Filter>Graphics\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="LightCullingDepthMapDrawPass.h">
+      <Filter>Graphics\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\depthDBG.frag">

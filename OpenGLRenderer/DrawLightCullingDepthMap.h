@@ -13,7 +13,6 @@ public:
 	virtual void Draw(ShaderProgram& shader) override;
 
 private:
-	ShaderProgram shaderProgram_;
 	Texture& deptMap_;
 };
 

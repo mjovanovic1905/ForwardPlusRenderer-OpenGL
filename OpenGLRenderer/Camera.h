@@ -9,6 +9,7 @@ class Camera
 {
 public:
     Camera();
+    Camera(glm::vec3 position);
 
     static constexpr float NEAR_PLANE = 0.1f;
     static constexpr float FAR_PLANE = 2000.f; 
