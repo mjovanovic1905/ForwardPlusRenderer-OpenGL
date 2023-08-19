@@ -15,14 +15,13 @@ public:
     static constexpr float FAR_PLANE = 2000.f; 
 
     void Init(glm::vec3 position);
-    void ProcessInput(float deltaTime);
+    void ProcessInputForMovement(float deltaTime);
     glm::mat4 GetViewMatrix() const;
     glm::mat4 GetProjectionMatrix() const;
     glm::vec3 GetPosition() const;
     float GetFOV() const { return fov_; }
 
 private:
-    static constexpr float MOVE_SPEED = 150.f;
 
     glm::vec3 position_;
     glm::vec3 front_;

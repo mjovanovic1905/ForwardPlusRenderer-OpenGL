@@ -10,6 +10,9 @@ public:
     RenderPass();
     RenderPass(const std::function<void(ShaderProgram&)>& Draw, ShaderProgram shader);
 
+    RenderPass(const RenderPass&) = default;
+    RenderPass& operator=(const RenderPass&) = default;
+
     void Draw();
 
     virtual ~RenderPass();

@@ -9,6 +9,7 @@
 #include "Texture.h"
 #include "Renderbuffer.h"
 #include "FXAA.h"
+#include "PointLight.h"
 
 class Camera;
 class DirectionalLight;
@@ -18,12 +19,15 @@ class ObjectDrawPass : public RenderPass
 {
 public:
     ObjectDrawPass() = default;
+    ObjectDrawPass(const ObjectDrawPass&);
+    ObjectDrawPass& operator=(const ObjectDrawPass&);
 
     ObjectDrawPass(
-        const std::function<void(ShaderProgram&)>& Draw, ShaderProgram shader,
-        const Camera& camera,
-        const DirectionalLight& light,
-        const std::vector<PointLight>& pointLights
+        const std::function<void(ShaderProgram&)>& Draw,
+        ShaderProgram shader,
+        Camera& camera,
+        DirectionalLight& light,
+        std::vector<PointLight>& pointLights
     );
 
     virtual ~ObjectDrawPass() override;
@@ -36,12 +40,14 @@ public:
 
 private: 
 
+    void Copy(const ObjectDrawPass&);
+
     void SetupCustomFramebuffer();
     inline bool isUsingFXAA() const;
     
-    const Camera& camera_;
-    const DirectionalLight& light_;
-    const std::vector<PointLight>& pointLights_;
+    Camera& camera_;
+    DirectionalLight& light_;
+    std::vector<PointLight>& pointLights_;
     
     std::optional<Framebuffer> framebuffer_;
     std::shared_ptr<Texture> targetTexture_;

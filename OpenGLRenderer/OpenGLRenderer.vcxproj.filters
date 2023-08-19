@@ -117,7 +117,6 @@
     <ClCompile Include="DrawDebugLights.cpp">
       <Filter>Graphics\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="DebugLightsPass.cpp">
       <Filter>Graphics\Debug</Filter>
     </ClCompile>
@@ -126,6 +125,12 @@
     </ClCompile>
     <ClCompile Include="LightCullingDepthMapDrawPass.cpp">
       <Filter>Graphics\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsEngine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="InputProcessor.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -228,7 +233,6 @@
     <ClInclude Include="DrawDebugLights.h">
       <Filter>Graphics\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="DebugLightsPass.h">
       <Filter>Graphics\Debug</Filter>
     </ClInclude>
@@ -237,6 +241,12 @@
     </ClInclude>
     <ClInclude Include="LightCullingDepthMapDrawPass.h">
       <Filter>Graphics\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsEngine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="InputProcessor.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

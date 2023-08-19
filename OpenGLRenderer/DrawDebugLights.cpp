@@ -6,6 +6,17 @@
 #include "CubedSphere.h"
 
 
+DrawDebugLights::DrawDebugLights(const DrawDebugLights& drawDebugLights)
+    : DrawableObject(drawDebugLights)
+{
+}
+
+DrawDebugLights& DrawDebugLights::operator=(const DrawDebugLights& drawDebugLights)
+{
+    DrawableObject::operator=(drawDebugLights);
+    return *this;
+}
+
 DrawDebugLights::DrawDebugLights(const std::vector<PointLight>& pointLights)
 {
     std::vector<DebugLightVertex> vertices;

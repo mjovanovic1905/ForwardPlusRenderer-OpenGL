@@ -19,6 +19,7 @@ public:
 private:
 
     void PerformLightCulling();
+    void Rebuild();
 
 	Camera camera_;
     GraphicsEngineSetupUtil graphicsUtils_;

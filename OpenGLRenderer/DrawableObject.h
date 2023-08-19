@@ -14,6 +14,8 @@ class DrawableObject
 {
 public:
     DrawableObject();
+    DrawableObject(const DrawableObject&);
+    DrawableObject& operator=(const DrawableObject&);
     virtual ~DrawableObject() = 0;
 
     void SetModel(const glm::mat4& model);
@@ -43,6 +45,7 @@ protected:
 private:
     void CalculateMVP();
     void CalculateViewProj();
+    void Copy(const DrawableObject&);
 
     glm::mat4 model_;
     glm::mat4 view_;

@@ -5,6 +5,18 @@
 #include "CSMShadowMaps.h"
 #include "Window.h"
 
+CSMDepthPrepass::CSMDepthPrepass(const CSMDepthPrepass& csmDepthPrepass)
+    : shadowMaps_(csmDepthPrepass.shadowMaps_)
+{
+    Copy(csmDepthPrepass);
+}
+
+CSMDepthPrepass& CSMDepthPrepass::operator=(const CSMDepthPrepass& csmDepthPrepass)
+{
+    Copy(csmDepthPrepass);
+    return *this;
+}
+
 CSMDepthPrepass::CSMDepthPrepass(
     const std::function<void(ShaderProgram&)>& Draw, ShaderProgram shader,
     CSMShadowMaps& shadowMaps,
@@ -40,6 +52,15 @@ void CSMDepthPrepass::PostDraw()
     glViewport(0, 0, window.GetWidth(), window.GetHeight());
     glCullFace(GL_BACK);
     Framebuffer::BindDefault();
+}
+
+void CSMDepthPrepass::Copy(const CSMDepthPrepass& csmDepthPrepass)
+{
+    this->drawFunc_ = csmDepthPrepass.drawFunc_;
+    this->shader_ = csmDepthPrepass.shader_;
+    this->framebuffer_ = csmDepthPrepass.framebuffer_;
+    this->shadowResolution_ = csmDepthPrepass.shadowResolution_;
+    this->shadowMaps_ = csmDepthPrepass.shadowMaps_;
 }
 
 CSMDepthPrepass::~CSMDepthPrepass()

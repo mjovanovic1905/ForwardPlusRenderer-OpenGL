@@ -44,7 +44,7 @@ ObjectDrawPass GraphicsEngineSetupUtil::SetupMainPass()
     fragmentShaderData.defines = GetCSMDefines();
     fragmentShaderData.includes = EngineUtils::ReadFile("./Shaders/shared.glsl");
     
-    if constexpr (EngineUtils::USE_LIGHT_CULLING)
+    if (EngineUtils::UseLightCulling)
     {
         auto lightCullingDefines = GetLightCullingDefines();
         fragmentShaderData.defines.insert(fragmentShaderData.defines.end(), lightCullingDefines.begin(), lightCullingDefines.end());
@@ -59,7 +59,7 @@ ObjectDrawPass GraphicsEngineSetupUtil::SetupMainPass()
 
     shaderProgram.UseProgram();
     shaderProgram.SetUniformValue("farPlane", Camera::FAR_PLANE);
-    if constexpr (EngineUtils::USE_LIGHT_CULLING)
+    if (EngineUtils::UseLightCulling)
     {
         shaderProgram.SetUniformValue("lightsPerTile", EngineUtils::LIGHTS_PER_TILE);
         shaderProgram.SetUniformValue("numOfTilesX", workGroupsX_);

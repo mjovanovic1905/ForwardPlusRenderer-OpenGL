@@ -12,7 +12,7 @@ public:
     LightGenerator();
     ~LightGenerator();
 
-    const std::vector<PointLight>& GetLights() const { return lights_; }
+    std::vector<PointLight>& GetLights() { return lights_; }
 
 private:
     glm::vec4 GenerateRandomPosition(std::uniform_real_distribution<>& dis, std::mt19937& gen);

@@ -8,13 +8,15 @@ class Camera;
 class DebugLightsPass : public RenderPass
 {
 public:
-	DebugLightsPass(const std::vector<PointLight>& pointLights, const Camera& camera);
+	DebugLightsPass(const DebugLightsPass&);
+	DebugLightsPass& operator=(const DebugLightsPass&);
+	DebugLightsPass(const std::vector<PointLight>& pointLights, Camera & camera);
 
 	virtual void PreDraw() override;
 	virtual void PostDraw() override;
 
 private:
-	const Camera& camera_;
+	Camera& camera_;
 	DrawDebugLights debugLights_;
 };
 

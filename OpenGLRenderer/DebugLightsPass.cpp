@@ -2,7 +2,20 @@
 #include "Camera.h"
 #include "EngineUtils.h"
 
-DebugLightsPass::DebugLightsPass(const std::vector<PointLight>& pointLights, const Camera& camera)
+DebugLightsPass::DebugLightsPass(const DebugLightsPass& debugLightsPass)
+	: camera_(debugLightsPass.camera_)
+	, debugLights_(debugLightsPass.debugLights_)
+{
+}
+
+DebugLightsPass& DebugLightsPass::operator=(const DebugLightsPass& debugLightsPass)
+{
+	this->camera_ = debugLightsPass.camera_;
+	this->debugLights_ = debugLightsPass.debugLights_;
+	return *this;
+}
+
+DebugLightsPass::DebugLightsPass(const std::vector<PointLight>& pointLights, Camera & camera)
 	: RenderPass()
 	, camera_(camera)
 	, debugLights_(pointLights)

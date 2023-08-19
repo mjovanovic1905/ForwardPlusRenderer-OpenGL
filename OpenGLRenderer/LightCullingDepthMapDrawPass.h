@@ -9,6 +9,9 @@ class Texture;
 class LightCullingDepthMapDrawPass : public RenderPass
 {
 public:
+	LightCullingDepthMapDrawPass(const LightCullingDepthMapDrawPass&) = default;
+	LightCullingDepthMapDrawPass& operator=(const LightCullingDepthMapDrawPass&) = default;
+
 	LightCullingDepthMapDrawPass(Texture& deptMap);
 
 private:

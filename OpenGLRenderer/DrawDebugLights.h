@@ -9,6 +9,9 @@
 class DrawDebugLights : public DrawableObject
 {
 public:
+    DrawDebugLights(const DrawDebugLights&);
+    DrawDebugLights& operator=(const DrawDebugLights&);
+
     DrawDebugLights(const std::vector<PointLight>& pointLights);
     ~DrawDebugLights();
 

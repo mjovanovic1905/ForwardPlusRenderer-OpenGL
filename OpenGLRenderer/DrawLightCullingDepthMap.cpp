@@ -4,6 +4,19 @@
 #include "Window.h"
 #include "Texture.h"
 
+DrawLightCullingDepthMap::DrawLightCullingDepthMap(const DrawLightCullingDepthMap& drawLightCullingDepthMap)
+    : DrawableObject(drawLightCullingDepthMap)
+    , deptMap_(drawLightCullingDepthMap.deptMap_)
+{
+}
+
+DrawLightCullingDepthMap& DrawLightCullingDepthMap::operator=(const DrawLightCullingDepthMap& drawLightCullingDepthMap)
+{
+    DrawableObject::operator=(drawLightCullingDepthMap);
+    this->deptMap_ = drawLightCullingDepthMap.deptMap_;
+    return *this;
+}
+
 DrawLightCullingDepthMap::DrawLightCullingDepthMap(Texture& deptMap)
     : deptMap_(deptMap)
 {

@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Window.h"
+#include "EngineUtils.h"
 
 static float lastX = 0.f;
 static float lastY = 0.f;
@@ -81,9 +82,9 @@ void Camera::Init(glm::vec3 position)
     glfwSetScrollCallback(window.GetGLFWwindow(), scrollCallback);
 }
 
-void Camera::ProcessInput(float deltaTime)
+void Camera::ProcessInputForMovement(float deltaTime)
 {
-    float cameraSpeed = MOVE_SPEED * deltaTime;
+    float cameraSpeed = EngineUtils::MOVE_SPEED * deltaTime;
 
     if (frontChanged)
     {

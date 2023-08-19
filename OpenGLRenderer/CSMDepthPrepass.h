@@ -10,6 +10,10 @@ class CSMShadowMaps;
 class CSMDepthPrepass : public RenderPass
 {
 public:
+    CSMDepthPrepass(const CSMDepthPrepass&);
+    CSMDepthPrepass& operator=(const CSMDepthPrepass&);
+
+
     CSMDepthPrepass(
         const std::function<void(ShaderProgram&)>& Draw, ShaderProgram shader,
         CSMShadowMaps& shadowMaps,
@@ -21,6 +25,8 @@ public:
     virtual void PostDraw() override;
 
 private:
+    void Copy(const CSMDepthPrepass&);
+
     Framebuffer framebuffer_;
     unsigned int shadowResolution_;
     CSMShadowMaps& shadowMaps_;

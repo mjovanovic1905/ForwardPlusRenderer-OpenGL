@@ -9,11 +9,25 @@
 #include "DirectionalLight.h"
 #include "Window.h"
 
+ObjectDrawPass::ObjectDrawPass(const ObjectDrawPass& objectDrawPass)
+    : camera_(objectDrawPass.camera_)
+    , light_(objectDrawPass.light_)
+    , pointLights_(objectDrawPass.pointLights_)
+{
+    Copy(objectDrawPass);
+}
+
+ObjectDrawPass& ObjectDrawPass::operator=(const ObjectDrawPass& objectDrawPass)
+{
+    Copy(objectDrawPass);
+    return *this;
+}
+
 ObjectDrawPass::ObjectDrawPass(
     const std::function<void(ShaderProgram&)>& Draw, ShaderProgram shader,
-    const Camera& camera,
-    const DirectionalLight& light,
-    const std::vector<PointLight>& pointLights
+    Camera& camera,
+    DirectionalLight& light,
+    std::vector<PointLight>& pointLights
 )
 : RenderPass(Draw, shader)
 , camera_(camera)
@@ -59,6 +73,20 @@ void ObjectDrawPass::PostDraw()
     }
 
     Framebuffer::BindDefault();
+}
+
+void ObjectDrawPass::Copy(const ObjectDrawPass& objectDrawPass)
+{
+    this->drawFunc_ = objectDrawPass.drawFunc_;
+    this->shader_ = objectDrawPass.shader_;
+    this->camera_ = objectDrawPass.camera_;
+    this->light_ = objectDrawPass.light_;
+    this->pointLights_ = objectDrawPass.pointLights_;
+    this->framebuffer_ = objectDrawPass.framebuffer_;
+    this->targetTexture_ = objectDrawPass.targetTexture_;
+    this->depthTexture_ = objectDrawPass.depthTexture_;
+    this->depthBuffer_ = objectDrawPass.depthBuffer_;
+    this->fxaa_ = objectDrawPass.fxaa_;
 }
 
 void ObjectDrawPass::SetupCustomFramebuffer()

@@ -4,6 +4,9 @@
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 
+bool EngineUtils::UseLightCulling = true;
+bool EngineUtils::DrawLightCullingDepthMap = false;
+bool EngineUtils::DrawDebugLights = false;
 
 bool EngineUtils::InitGLFW()
 {

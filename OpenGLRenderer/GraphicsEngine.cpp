@@ -2,6 +2,7 @@
 #include "EngineUtils.h"
 #include "Window.h"
 #include <GLFW/glfw3.h>
+#include "InputProcessor.h"
 
 GraphicsEngine::GraphicsEngine()
     : camera_(glm::vec3(0.0f, 100.0f, -24.0f))
@@ -13,11 +14,13 @@ GraphicsEngine::GraphicsEngine()
     , debugLights_(graphicsUtils_.SetupDrawDebugLights())
     , drawDepthMap_(graphicsUtils_.SetupLightCullingDepthMapDrawPass(depthPrepass_))
 {
+
 }
 
 void GraphicsEngine::Run()
 {
     Window& mainWindow = Window::Get();
+    InputProcessor inputProcessor;
 
     EngineUtils::SetupOpenGl();
 
@@ -28,17 +31,23 @@ void GraphicsEngine::Run()
         mainWindow.HandleResizeEvent();
 
         float currentFrame = glfwGetTime();
-        camera_.ProcessInput(currentFrame - lastFrame);
+        camera_.ProcessInputForMovement(currentFrame - lastFrame);
+        bool shouldRebuild = inputProcessor.ProcessInput();
+        if (shouldRebuild)
+        {
+            Rebuild();
+        }
+
         lastFrame = currentFrame;
 
         csmDepthPrepass_.Draw();
 
-        if constexpr (EngineUtils::USE_LIGHT_CULLING)
+        if (EngineUtils::UseLightCulling)
         {
             PerformLightCulling();
         }
 
-        if constexpr (EngineUtils::DRAW_LIGHT_CULLING_DEPTH_MAP)
+        if (EngineUtils::DrawLightCullingDepthMap)
         {
             drawDepthMap_.Draw();
         }
@@ -47,7 +56,7 @@ void GraphicsEngine::Run()
         {
             drawPass_.Draw();
 
-            if constexpr (EngineUtils::DRAW_DEBUG_LIGHTS)
+            if (EngineUtils::DrawDebugLights)
             {
                 debugLights_.Draw();
             }
@@ -73,4 +82,14 @@ void GraphicsEngine::PerformLightCulling()
     depthPrepass_.GetDepthMap().BindTexture();
     computeShader_.Execute();
     computeShader_.Wait();
+}
+
+void GraphicsEngine::Rebuild()
+{
+    drawPass_ = graphicsUtils_.SetupMainPass();
+    csmDepthPrepass_ = graphicsUtils_.SetupCSMDepthPrepass();
+    depthPrepass_ = graphicsUtils_.SetupLightCullingDepthPrepass();
+    computeShader_ = graphicsUtils_.SetupLightCullingComputeShader(depthPrepass_);
+    debugLights_ = graphicsUtils_.SetupDrawDebugLights();
+    drawDepthMap_ = graphicsUtils_.SetupLightCullingDepthMapDrawPass(depthPrepass_);
 }
