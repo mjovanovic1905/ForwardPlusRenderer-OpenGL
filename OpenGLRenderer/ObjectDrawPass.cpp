@@ -8,11 +8,13 @@
 #include "Camera.h"
 #include "DirectionalLight.h"
 #include "Window.h"
+#include "CSMShadowMaps.h"
 
 ObjectDrawPass::ObjectDrawPass(const ObjectDrawPass& objectDrawPass)
     : camera_(objectDrawPass.camera_)
     , light_(objectDrawPass.light_)
     , pointLights_(objectDrawPass.pointLights_)
+    , shadowMaps_(objectDrawPass.shadowMaps_)
 {
     Copy(objectDrawPass);
 }
@@ -27,12 +29,14 @@ ObjectDrawPass::ObjectDrawPass(
     const std::function<void(ShaderProgram&)>& Draw, ShaderProgram shader,
     Camera& camera,
     DirectionalLight& light,
-    std::vector<PointLight>& pointLights
+    std::vector<PointLight>& pointLights,
+    const CSMShadowMaps& shadowMaps
 )
 : RenderPass(Draw, shader)
 , camera_(camera)
 , light_(light)
 , pointLights_(pointLights)
+, shadowMaps_(shadowMaps)
 {
 }
 
@@ -57,10 +61,10 @@ void ObjectDrawPass::PreDraw()
 
     shader_.UseProgram();
     shader_.SetUniformValue("viewPos", camera_.GetPosition());
-    shader_.SetUniformBuffer("LightSpaceMatrices", 0);
+    shader_.SetUniformValue("lightSpaceMatrices", shadowMaps_.GetMatrices());
     shader_.SetStorageBuffer("LightBuffer", 1);
     shader_.SetStorageBuffer("VisibleLightIndicesBuffer", 2);
-    shader_.SetUniformValue("shadowMap", 2);
+    shader_.SetUniformValue("shadowMap", (int)shadowMaps_.GetShadowMapTextureId());
     shader_.SetUniformValue("light", light_);
     shader_.SetUniformValue("pointLights", pointLights_);
 }

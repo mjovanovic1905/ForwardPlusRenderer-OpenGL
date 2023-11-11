@@ -8,7 +8,7 @@
 GraphicsEngineSetupUtil::GraphicsEngineSetupUtil(Camera& camera)
     : camera_(camera)
 {
-    light_.direction = glm::normalize(glm::vec3(20.0f, 50, 20.0f));
+    light_.direction = glm::normalize(glm::vec3(20.0f, 500, -20.0f)); 
     light_.ambient = glm::vec3(0.05f, 0.05f, 0.05f);
     light_.diffuse = glm::vec3(0.4f, 0.4f, 0.4f);
     light_.specular = glm::vec3(0.5f, 0.5f, 0.5f);
@@ -76,7 +76,7 @@ ObjectDrawPass GraphicsEngineSetupUtil::SetupMainPass()
         shaderProgram.SetUniformValue(("cascadePlaneDistances[" + std::to_string(i) + "]").c_str(), shadowCascadeLevels[i]);
     }
 
-    ObjectDrawPass drawPass(drawFunc_, shaderProgram, camera_, light_, lightGenerator_.GetLights());
+    ObjectDrawPass drawPass(drawFunc_, shaderProgram, camera_, light_, lightGenerator_.GetLights(), csmShadowMaps_);
     if constexpr (!EngineUtils::MSAA_ENABLED)
     {
         drawPass.UseFXAA();

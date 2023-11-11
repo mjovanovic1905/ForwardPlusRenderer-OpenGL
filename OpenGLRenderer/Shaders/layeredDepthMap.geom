@@ -1,16 +1,15 @@
 #version 450 core
 
-// NUM_CSM_PLANES is a static define that needs to be supplied to the shader
-// via the ShaderData struct before building the shader itself
+// --------------------------------
+// These defines come from the runtime, the comments are here to address the IDE errors
+//!#define NUM_CSM_PLANES 5
+// --------------------------------
 
 
 layout(triangles, invocations = NUM_CSM_PLANES) in;
 layout(triangle_strip, max_vertices = 3) out;
 
-layout (std140, binding = 0) uniform LightSpaceMatrices
-{
-    mat4 lightSpaceMatrices[NUM_CSM_PLANES];
-};
+uniform mat4 lightSpaceMatrices[NUM_CSM_PLANES];
 
 void main()
 {          

@@ -14,6 +14,7 @@
 class Camera;
 class DirectionalLight;
 class Window;
+class CSMShadowMaps;
 
 class ObjectDrawPass : public RenderPass
 {
@@ -27,7 +28,8 @@ public:
         ShaderProgram shader,
         Camera& camera,
         DirectionalLight& light,
-        std::vector<PointLight>& pointLights
+        std::vector<PointLight>& pointLights,
+        const CSMShadowMaps& shadowMaps
     );
 
     virtual ~ObjectDrawPass() override;
@@ -55,4 +57,6 @@ private:
     std::optional<Renderbuffer> depthBuffer_;
 
     std::optional<FXAA> fxaa_;
+
+    const CSMShadowMaps& shadowMaps_;
 };
