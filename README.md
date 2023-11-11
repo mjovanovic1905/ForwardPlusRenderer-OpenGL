@@ -1,4 +1,4 @@
-# Forward Plus Renderer with CSM and FXAA
+# OpenGL Forward Plus Renderer
 
 This repository contains a Forward Plus Renderer implemented in C++ using OpenGL, featuring Cascaded Shadow Maps (CSM) and Fast Approximate Anti-Aliasing (FXAA).
 
