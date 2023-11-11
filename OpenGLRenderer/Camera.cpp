@@ -80,6 +80,7 @@ void Camera::Init(glm::vec3 position)
     const auto window = Window::Get();
     glfwSetCursorPosCallback(window.GetGLFWwindow(), mouseCallback);
     glfwSetScrollCallback(window.GetGLFWwindow(), scrollCallback);
+    ProcessInputForMovement(0);
 }
 
 void Camera::ProcessInputForMovement(float deltaTime)

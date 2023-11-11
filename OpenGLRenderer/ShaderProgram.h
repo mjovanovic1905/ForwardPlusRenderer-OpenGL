@@ -49,7 +49,9 @@ public:
     void SetUniformValue(const char* uniformName, const PointLight& light);
     void SetUniformBuffer(const char* uniformBufferName, int binding);
     void SetStorageBuffer(const char* storageBufferName, int binding);
-    void SetUniformValue(const char* uniformName, const std::vector<PointLight>& lights);
+
+    template<typename T>
+    void SetUniformValue(const char* uniformName, const std::vector<T>& lights);
 
 protected:
 
@@ -58,3 +60,14 @@ protected:
     static constexpr unsigned int INVALID_SHADER_ID = UINT_MAX;
     unsigned int id_;
 };
+
+template<typename T>
+void ShaderProgram::SetUniformValue(const char* uniformName, const std::vector<T>& values)
+{
+    for (int i = 0; i < values.size(); i++)
+    {
+        std::string name = uniformName;
+        name.append("[").append(std::to_string(i)).append("]");
+        SetUniformValue(name.c_str(), values[i]);
+    }
+}

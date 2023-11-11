@@ -34,16 +34,16 @@ CSMDepthPrepass::CSMDepthPrepass(
 
 void CSMDepthPrepass::PreDraw()
 {
+    shadowMaps_.GenerateShadows();
+    shadowMaps_.BindShadowMapTexture();
+
     framebuffer_.Bind();
     glViewport(0, 0, shadowResolution_, shadowResolution_);
     glCullFace(GL_FRONT);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    shadowMaps_.GenerateShadows();
-    shadowMaps_.BindShadowMapTexture();
-
     shader_.UseProgram();
-    shader_.SetUniformBuffer("LightSpaceMatrices", 0);
+    shader_.SetUniformValue("lightSpaceMatrices", shadowMaps_.GetMatrices());
 }
 
 void CSMDepthPrepass::PostDraw()

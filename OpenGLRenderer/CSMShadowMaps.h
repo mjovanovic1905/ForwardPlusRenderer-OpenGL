@@ -31,7 +31,7 @@ public:
     unsigned int GetShadowMapTextureId() const { return depthMapTextures_.GetId(); }
     const std::vector<float>& GetShadowCascadeLevels() const { return shadowCascadeLevels_; }
     int GetNumCSMPlanes() const { return shadowCascadeLevels_.size() + 1; }
-
+    std::vector<glm::mat4> GetMatrices() const { return  GetLightSpaceMatrices(shadowCascadeLevels_, camera_, light_.direction); }
     ~CSMShadowMaps();
 
 private:

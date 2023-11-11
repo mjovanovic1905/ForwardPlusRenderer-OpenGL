@@ -34,10 +34,7 @@ in vec4 FragPosViewSpace;
 
 out vec4 FragColor;
 
-layout (std140, binding = 0) uniform LightSpaceMatrices
-{
-    mat4 lightSpaceMatrices[NUM_CSM_PLANES];
-};
+uniform mat4 lightSpaceMatrices[NUM_CSM_PLANES];
 
 layout(std430, binding = 1) readonly buffer LightBuffer {
     PointLight data[];

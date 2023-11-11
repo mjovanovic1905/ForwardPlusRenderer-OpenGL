@@ -180,16 +180,6 @@ void ShaderProgram::SetUniformValue(const char* uniformName, const PointLight& l
     SetUniformValue((baseName + ".radius").c_str(), light.radius);
 }
 
-void ShaderProgram::SetUniformValue(const char* uniformName, const std::vector<PointLight>& lights)
-{
-    for (int i = 0; i < lights.size(); i++)
-    {
-        std::string name = uniformName;
-        name.append("[").append(std::to_string(i)).append("]");
-        SetUniformValue(name.c_str(), lights[i]);
-    }
-}
-
 void ShaderProgram::SetUniformBuffer(const char* uniformBufferName, int binding)
 {
     unsigned int uboIndex = glGetUniformBlockIndex(id_, uniformBufferName);   
